@@ -1,0 +1,1039 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#174d3a">
+<title>UrbanEye | Report an Issue</title>
+
+<!-- MONTH 4 WEEK 2: LEAFLET MAP - CORRECTED -->
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+
+:root {
+  --navy: #174d3a;
+  --blue: #23845e;
+  --teal: #0b8f87;
+  --bg: #f2f8f4;
+  --ink: #173629;
+  --muted: #61786b;
+  --line: #d7e8dc;
+}
+
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font:15px/1.5 Inter,Segoe UI,Arial,sans-serif;color:var(--ink)}
+header{background:var(--navy);color:white;padding:18px max(20px,calc((100% - 1000px)/2));display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{font-size:21px;font-weight:800}
+.brand span{color:#59d4c5}
+nav{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;padding:9px 12px;border-radius:8px}
+nav a:hover{background:#ffffff1a}
+main{max-width:1050px;margin:30px auto;padding:0 18px}
+.layout{display:grid;grid-template-columns:.8fr 1.2fr;gap:18px}
+.intro,.form-card{background:white;border:1px solid var(--line);border-radius:16px;padding:25px;box-shadow:0 6px 20px #1a355508;min-width:0}
+.eyebrow{color:var(--teal);font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:1.3px}
+h1{font-size:29px;line-height:1.2;margin:8px 0 12px}
+h2{font-size:18px;margin:0 0 17px}
+.muted{color:var(--muted)}
+.tip{padding:13px;background:#edf8f6;border-radius:10px;color:#28635c;font-size:13px;margin-top:18px}
+.field{margin-bottom:15px}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:6px}
+input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d7dfeb;border-radius:9px;font:inherit;color:var(--ink);background:white}
+textarea{resize:vertical;min-height:125px}
+input:focus,select:focus,textarea:focus{outline:2px solid #9bbbe9;border-color:var(--blue)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.file-hint,.hint{font-size:12px;color:var(--muted);margin-top:5px}
+.preview{max-width:100%;max-height:300px;border-radius:10px;margin-top:10px;display:none;border:1px solid var(--line);object-fit:contain}
+.btn{border:0;border-radius:9px;background:var(--blue);color:white;padding:12px 16px;font:inherit;font-weight:800;cursor:pointer;text-align:center}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn.secondary{background:#eaf0fa;color:var(--navy)}
+.btn.small{padding:9px 12px;font-size:13px}
+.full{width:100%}
+.message{display:none;padding:13px 15px;border-radius:10px;margin:0 0 18px;scroll-margin-top:15px;overflow-wrap:anywhere}
+.message.success{display:block;background:#dcf7ea;color:#126f4e;border:1px solid #a7e6c9}
+.message.error{display:block;background:#ffebeb;color:#a92c2c;border:1px solid #f4b7b7}
+.message strong{display:block;margin-bottom:3px}
+.back{display:inline-block;margin-top:16px;color:var(--blue);font-weight:700;text-decoration:none}
+.category-hint{background:#eef5ff;border-radius:8px;padding:9px 11px;font-size:12px;color:#244e87;margin-top:7px}
+.actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.gps-status{padding:10px 12px;background:#eef5ff;border-radius:9px;color:#244e87;font-size:12px;margin-top:8px}
+.camera-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.camera-panel{display:none;margin-top:12px;padding:12px;background:#f3f8f7;border:1px solid var(--line);border-radius:12px}
+.camera-panel.open{display:block}
+#cameraVideo,#cameraCaptured{display:block;width:100%;max-height:360px;object-fit:contain;background:#111;border-radius:10px}
+#cameraCaptured[hidden],#cameraVideo[hidden]{display:none}
+.camera-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.camera-buttons .btn{flex:1 1 120px}
+.camera-help{font-size:12px;color:var(--muted);margin:8px 0}
+.ai-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}
+.ai-tools #aiStatus{font-size:12px;color:var(--muted)}
+.ai-result{margin-top:12px;padding:13px;border:1px solid #b8d8ce;border-radius:10px;background:#effaf5;color:#20584a;font-size:13px}
+.ai-result p{margin:5px 0}
+.ai-result small{color:#56756d}
+[hidden]{display:none!important}
+
+/* MONTH 4 WEEK 2: INTERACTIVE MAP */
+.map-card{margin:15px 0;padding:15px;background:#f5faf6;border:1px solid #d1e8d7;border-radius:13px}
+.map-heading{font-size:15px;font-weight:800;color:#205b42;margin-bottom:5px}
+.map-help{font-size:12px;color:#557462;margin:0 0 12px}
+#issueMap{height:310px;width:100%;border:1px solid #c9dfcf;border-radius:11px;background:#e5eee8;z-index:1}
+.map-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+.map-status{margin-top:10px;padding:9px 11px;background:#e6f3e9;border-radius:8px;color:#245b40;font-size:12px;overflow-wrap:anywhere}
+.map-attribution{font-size:11px;color:#66758b;margin-top:7px}
+.map-warning{color:#8c5618;background:#fff4df;border:1px solid #efdfba}
+.map-location{font-size:12px;font-weight:700;color:#1d6548;margin-top:9px}
+
+@media(max-width:760px){
+ .layout{grid-template-columns:1fr}
+ .intro,.form-card{padding:20px}
+ .two{grid-template-columns:1fr}
+ main{margin-top:18px}
+}
+@media(max-width:420px){
+ .camera-options{grid-template-columns:1fr}
+ .camera-buttons .btn{width:100%}
+ #cameraVideo,#cameraCaptured{max-height:280px}
+ #issueMap{height:270px}
+ header{padding:15px}
+}
+</style>
+</head>
+
+<body>
+<header>
+ <div class="brand">UrbanEye <span>Botswana</span></div>
+ <nav>
+  <a href="/dashboard.html">Dashboard</a>
+  <a href="/report.html">Report issue</a>
+  <a href="#" id="logout">Log out</a>
+ </nav>
+</header>
+
+<main>
+<div class="layout">
+
+<section class="intro">
+ <div class="eyebrow">Make your community heard</div>
+ <h1>Report a community issue</h1>
+ <p class="muted">Give the local authority enough information to identify the problem and direct it to the relevant department.</p>
+ <div class="tip"><strong>What happens after submission?</strong>
+ <p>Your report is saved with a unique ID and Pending status. UrbanEye uses the selected or suggested category to route it to the linked department.</p></div>
+ <div class="tip"><strong>Photo evidence</strong>
+ <p>Take a new photo or upload an existing image. JPG, PNG, WEBP and GIF files up to 5 MB are accepted.</p></div>
+ <div class="tip"><strong>GPS and interactive map</strong>
+ <p>Detect your location, inspect it on the map, then adjust the marker if the reported issue is somewhere else.</p></div>
+ <a class="back" href="/dashboard.html">← Back to dashboard</a>
+</section>
+
+<section class="form-card">
+<h2>Issue details</h2>
+<div id="message" class="message" role="status" aria-live="polite"></div>
+
+<form id="reportForm" enctype="multipart/form-data" novalidate>
+ <div class="field">
+  <label for="title">Report title *</label>
+  <input id="title" name="title" minlength="4" maxlength="200" required placeholder="e.g. Burst water pipe beside the clinic">
+ </div>
+
+ <div class="field">
+  <label for="category_id">Issue category *</label>
+  <select id="category_id" name="category_id" required>
+   <option value="">Loading categories…</option>
+  </select>
+  <div id="categoryHint" class="category-hint">Start typing the issue title or description and UrbanEye will suggest a matching category and department.</div>
+ </div>
+
+ <div class="field">
+  <label for="description">Description *</label>
+  <textarea id="description" name="description" minlength="10" maxlength="5000" required placeholder="Describe what happened, the exact location, and any safety concerns…"></textarea>
+ </div>
+
+ <div class="field">
+  <label for="location_name">Location / landmark</label>
+  <input id="location_name" name="location_name" maxlength="255" placeholder="e.g. Along A1 road, near Palapye mall">
+ </div>
+
+ <div class="two">
+  <div class="field">
+   <label for="latitude">Latitude</label>
+   <input id="latitude" name="latitude" type="number" step="any" min="-90" max="90" placeholder="Automatically detected">
+  </div>
+  <div class="field">
+   <label for="longitude">Longitude</label>
+   <input id="longitude" name="longitude" type="number" step="any" min="-180" max="180" placeholder="Automatically detected">
+  </div>
+ </div>
+
+ <div class="field">
+  <button id="gpsBtn" class="btn secondary" type="button">Detect my location</button>
+  <div id="gpsStatus" class="gps-status" role="status" aria-live="polite">
+   Your location has not been detected yet. Allow location access when prompted, or enter coordinates manually.
+  </div>
+ </div>
+
+ <!-- MONTH 4 WEEK 2: LOCATION MAP -->
+ <section class="map-card" aria-label="Interactive issue location map">
+  <div class="map-heading">📍 Interactive issue location map</div>
+  <p class="map-help">
+   Detect your location, click the map to choose where the issue occurred,
+   or drag the marker to correct its position.
+  </p>
+
+  <div id="issueMap" aria-label="Map showing the reported issue location"></div>
+
+  <div class="map-toolbar">
+   <button id="mapDetectBtn" class="btn small" type="button">📍 Detect GPS</button>
+   <button id="mapUpdateBtn" class="btn secondary small" type="button">Show entered coordinates</button>
+   <button id="mapClearBtn" class="btn secondary small" type="button">Clear map location</button>
+  </div>
+
+  <div id="mapStatus" class="map-status" role="status" aria-live="polite">
+   Waiting for a location. You can detect GPS or click the map.
+  </div>
+  <div id="mapCoordinates" class="map-location">No location selected.</div>
+  <div class="map-attribution">Map data © OpenStreetMap contributors. Map display powered by Leaflet.</div>
+ </section>
+
+ <div class="field">
+  <label>Photo evidence (optional)</label>
+  <div class="camera-options">
+   <button id="openCameraBtn" class="btn" type="button">Take a Photo</button>
+   <button id="choosePhotoBtn" class="btn secondary" type="button">Choose / Upload Photo</button>
+  </div>
+  <p class="camera-help">JPG, PNG, WEBP or GIF · Maximum 5 MB.</p>
+
+  <div id="cameraPanel" class="camera-panel">
+   <p id="cameraStatus" class="camera-help" role="status" aria-live="polite">Allow camera access when your browser asks.</p>
+   <video id="cameraVideo" autoplay playsinline muted></video>
+   <img id="cameraCaptured" alt="Captured photo awaiting confirmation" hidden>
+   <div class="camera-buttons">
+    <button id="capturePhotoBtn" class="btn" type="button">Capture Photo</button>
+    <button id="retakePhotoBtn" class="btn secondary" type="button" hidden>Retake</button>
+    <button id="usePhotoBtn" class="btn" type="button" hidden>Use Photo</button>
+    <button id="closeCameraBtn" class="btn secondary" type="button">Close Camera</button>
+   </div>
+  </div>
+
+  <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+  <div class="file-hint">Selected photo: <span id="selectedPhotoName">None</span></div>
+  <button id="removePhotoBtn" class="btn secondary small" type="button" hidden>Remove Photo</button>
+  <img id="preview" class="preview" alt="Preview of selected issue photo">
+
+  <div class="ai-tools">
+   <button id="classifyImageBtn" class="btn secondary small" type="button" disabled>Classify photo with AI</button>
+   <span id="aiStatus" role="status" aria-live="polite">Choose or capture a photo, then run AI classification.</span>
+  </div>
+  <div id="aiResult" class="ai-result" hidden>
+   <strong>AI image classification</strong>
+   <p id="aiDetails"></p>
+   <p id="aiExplanation"></p>
+   <small>AI confidence is an estimate, not a guarantee. Review the suggested category before submitting.</small>
+  </div>
+ </div>
+
+ <button id="submitBtn" class="btn full" type="submit">Submit report</button>
+
+ <div id="afterSubmitActions" class="actions" hidden>
+  <button id="newReportBtn" class="btn secondary" type="button">Clear form for another report</button>
+  <a class="btn" href="/dashboard.html" style="text-decoration:none">View dashboard</a>
+ </div>
+</form>
+</section>
+</div>
+</main>
+
+<script>
+'use strict';
+
+const token=localStorage.getItem('urbaneye_token');
+if(!token) location.replace('/login.html');
+
+const $=id=>document.getElementById(id);
+const form=$('reportForm'),msg=$('message'),btn=$('submitBtn');
+const categorySelect=$('category_id'),categoryHint=$('categoryHint');
+const titleInput=$('title'),descriptionInput=$('description');
+const latitudeInput=$('latitude'),longitudeInput=$('longitude');
+const gpsBtn=$('gpsBtn'),gpsStatus=$('gpsStatus');
+const imageInput=$('image'),preview=$('preview');
+const classifyImageBtn=$('classifyImageBtn'),aiStatus=$('aiStatus');
+const aiResult=$('aiResult'),aiDetails=$('aiDetails'),aiExplanation=$('aiExplanation');
+const openCameraBtn=$('openCameraBtn'),choosePhotoBtn=$('choosePhotoBtn');
+const cameraPanel=$('cameraPanel'),cameraVideo=$('cameraVideo');
+const cameraCaptured=$('cameraCaptured'),cameraStatus=$('cameraStatus');
+const capturePhotoBtn=$('capturePhotoBtn'),retakePhotoBtn=$('retakePhotoBtn');
+const usePhotoBtn=$('usePhotoBtn'),closeCameraBtn=$('closeCameraBtn');
+const removePhotoBtn=$('removePhotoBtn'),selectedPhotoName=$('selectedPhotoName');
+
+let categories=[];
+let categoryWasManuallyChanged=false;
+let reportSubmitted=false;
+let previewUrl=null;
+let aiPrediction=null;
+let cameraStream=null;
+let capturedBlob=null;
+let capturedObjectUrl=null;
+
+function showMessage(text,type,heading=''){
+ msg.className='message '+type;
+ msg.replaceChildren();
+ if(heading){
+  const strong=document.createElement('strong');
+  strong.textContent=heading;
+  msg.appendChild(strong);
+ }
+ const detail=document.createElement('div');
+ detail.textContent=text;
+ msg.appendChild(detail);
+ msg.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function normalise(text){
+ return String(text||'').toLowerCase()
+  .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function inferCategory(text){
+ const t=normalise(text);
+ if(!t)return null;
+ const rules=[
+  {keys:['burst water pipe','burst pipe','pipe burst','water pipe burst','water leak','leaking pipe','leakage','pipe leaking','broken water pipe'],names:['Burst Water Pipe']},
+  {keys:['water supply','no water','water shortage','water cut','water outage','dry tap','water pressure','water'],names:['Water Supply']},
+  {keys:['pothole','pot hole','road hole'],names:['Pothole']},
+  {keys:['illegal dumping','dumped rubbish','dumping rubbish','rubbish dump','waste pile','trash dump','garbage dump','littering','waste'],names:['Illegal Dumping']},
+  {keys:['streetlight','street light','lamp post','street lamp','light pole','broken light'],names:['Broken Streetlight']},
+  {keys:['blocked drain','blocked drainage','drain blocked','drainage','flooded drain','sewer drain'],names:['Blocked Drainage']},
+  {keys:['damaged road','road damage','cracked road','road surface','road is damaged','unsafe road'],names:['Damaged Road']},
+  {keys:['electricity','power outage','power cut','no power','electrical fault','electric wire','transformer','blackout'],names:['Other']}
+ ];
+ for(const rule of rules){
+  if(rule.keys.some(k=>t.includes(k))){
+   for(const name of rule.names){
+    const found=categories.find(c=>normalise(c.category_name)===normalise(name));
+    if(found)return found;
+   }
+  }
+ }
+ return null;
+}
+
+function updateCategorySuggestion(){
+ if(categoryWasManuallyChanged||reportSubmitted)return;
+ const suggestion=inferCategory(`${titleInput.value} ${descriptionInput.value}`);
+ if(suggestion){
+  categorySelect.value=String(suggestion.category_id);
+  categoryHint.textContent=`Suggested automatically: ${suggestion.category_name} → ${suggestion.department_name}. You can choose a different category manually.`;
+ }else{
+  categoryHint.textContent='No confident category match yet. Add details such as “burst water pipe”, “pothole” or “illegal dumping”, or select a category manually.';
+ }
+}
+
+async function loadCategories(){
+ try{
+  const r=await fetch('/api/issues/categories',{headers:{Authorization:`Bearer ${token}`}});
+  const d=await r.json();
+  if(r.status===401){location.replace('/login.html');return;}
+  if(!r.ok)throw Error(d.message||'Could not load categories.');
+  categories=d.categories||[];
+  categorySelect.replaceChildren();
+  const placeholder=document.createElement('option');
+  placeholder.value='';
+  placeholder.textContent='Choose a category (or type issue details for an automatic suggestion)';
+  categorySelect.appendChild(placeholder);
+  categories.forEach(c=>{
+   const option=document.createElement('option');
+   option.value=String(c.category_id);
+   option.textContent=`${c.category_name} — ${c.department_name}`;
+   categorySelect.appendChild(option);
+  });
+  updateCategorySuggestion();
+ }catch(e){
+  categorySelect.innerHTML='<option value="">Unable to load categories</option>';
+  showMessage(e.message,'error','Categories could not be loaded');
+ }
+}
+
+/* ====================================================
+   MONTH 4 WEEK 2: INTERACTIVE GPS MAP
+   ==================================================== */
+
+let issueMap=null;
+let issueMarker=null;
+let accuracyCircle=null;
+let lastGpsAccuracy=null;
+let mapReady=false;
+
+// Map opens over Botswana. This is a general starting view,
+// NOT an assumption about the citizen's current location.
+const defaultMapCentre=[-22.3285,24.6849];
+
+function mapMessage(text,warning=false){
+ const el=$('mapStatus');
+ el.textContent=text;
+ el.className='map-status'+(warning?' map-warning':'');
+}
+
+function validCoordinatePair(lat,lon){
+ return Number.isFinite(lat)&&Number.isFinite(lon)
+  &&lat>=-90&&lat<=90&&lon>=-180&&lon<=180;
+}
+
+function initialiseMap(){
+ if(typeof L==='undefined'){
+  mapMessage('Map library could not load. Check your internet connection. GPS and manual coordinates still work.',true);
+  return;
+ }
+ try{
+  issueMap=L.map('issueMap',{scrollWheelZoom:false}).setView(defaultMapCentre,6);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+   maxZoom:19,
+   attribution:'&copy; OpenStreetMap contributors'
+  }).addTo(issueMap);
+
+  issueMap.on('click',event=>{
+   if(reportSubmitted)return;
+   setMapLocation(event.latlng.lat,event.latlng.lng,{
+    source:'map',
+    zoom:false,
+    accuracy:null
+   });
+  });
+
+  mapReady=true;
+  mapMessage('Map ready. Detect GPS or click the map to select an issue location.');
+  setTimeout(()=>issueMap.invalidateSize(),100);
+ }catch(error){
+  mapMessage('Could not initialise the map. You can still use GPS or enter coordinates manually.',true);
+ }
+}
+
+function clearAccuracyCircle(){
+ if(accuracyCircle&&issueMap){
+  issueMap.removeLayer(accuracyCircle);
+  accuracyCircle=null;
+ }
+}
+
+function setMapLocation(lat,lon,options={}){
+ lat=Number(lat);
+ lon=Number(lon);
+
+ if(!validCoordinatePair(lat,lon)){
+  mapMessage('Invalid coordinates. Latitude must be -90 to 90 and longitude -180 to 180.',true);
+  return false;
+ }
+
+ latitudeInput.value=lat.toFixed(7);
+ longitudeInput.value=lon.toFixed(7);
+
+ $('mapCoordinates').textContent=`Selected location: ${lat.toFixed(6)}, ${lon.toFixed(6)}`;
+
+ if(options.source==='gps'){
+  mapMessage(`GPS location displayed. Accuracy: approximately ${Math.round(options.accuracy||0)} metres. Move the marker if the issue is elsewhere.`);
+ }else if(options.source==='map'){
+  mapMessage('Location updated from the map. The latitude and longitude fields have been updated.');
+ }else{
+  mapMessage('Coordinates displayed. Check the marker position before submitting.');
+ }
+
+ if(!mapReady||!issueMap)return true;
+
+ const point=[lat,lon];
+
+ if(!issueMarker){
+  issueMarker=L.marker(point,{draggable:true}).addTo(issueMap);
+  issueMarker.bindPopup('Reported issue location');
+
+  issueMarker.on('dragend',()=>{
+   if(reportSubmitted)return;
+   const position=issueMarker.getLatLng();
+   setMapLocation(position.lat,position.lng,{
+    source:'map',
+    zoom:false,
+    accuracy:null
+   });
+  });
+ }else{
+  issueMarker.setLatLng(point);
+ }
+
+ clearAccuracyCircle();
+
+ if(options.source==='gps'&&Number.isFinite(options.accuracy)&&options.accuracy>0){
+  accuracyCircle=L.circle(point,{
+   radius:options.accuracy,
+   color:'#2458a6',
+   fillColor:'#2458a6',
+   fillOpacity:0.08,
+   weight:1
+  }).addTo(issueMap);
+ }
+
+ if(options.zoom!==false){
+  if(options.source==='gps'&&options.accuracy>1000&&accuracyCircle){
+   issueMap.fitBounds(accuracyCircle.getBounds(),{maxZoom:15,padding:[20,20]});
+  }else{
+   issueMap.setView(point,16);
+  }
+ }
+
+ return true;
+}
+
+function updateMapFromInputs(){
+ const latText=latitudeInput.value.trim();
+ const lonText=longitudeInput.value.trim();
+
+ if(!latText&&!lonText){
+  mapMessage('Enter latitude and longitude, then click Show entered coordinates.',true);
+  return;
+ }
+
+ if(!latText||!lonText){
+  mapMessage('Enter both latitude and longitude.',true);
+  return;
+ }
+
+ setMapLocation(Number(latText),Number(lonText),{
+  source:'manual',
+  accuracy:null
+ });
+}
+
+function clearMapLocation(){
+ latitudeInput.value='';
+ longitudeInput.value='';
+ lastGpsAccuracy=null;
+
+ if(issueMap&&issueMarker){
+  issueMap.removeLayer(issueMarker);
+  issueMarker=null;
+ }
+ clearAccuracyCircle();
+
+ $('mapCoordinates').textContent='No location selected.';
+ mapMessage('Map location cleared. Detect GPS, click the map or enter coordinates.');
+ gpsStatus.textContent='Location cleared. Detect your location again or enter coordinates manually.';
+}
+
+$('mapDetectBtn').addEventListener('click',()=>gpsBtn.click());
+$('mapUpdateBtn').addEventListener('click',updateMapFromInputs);
+$('mapClearBtn').addEventListener('click',clearMapLocation);
+
+[latitudeInput,longitudeInput].forEach(input=>{
+ input.addEventListener('change',()=>{
+  if(latitudeInput.value.trim()&&longitudeInput.value.trim()){
+   updateMapFromInputs();
+  }
+ });
+});
+
+/* GPS location */
+gpsBtn.addEventListener('click',()=>{
+ if(!navigator.geolocation){
+  gpsStatus.textContent='GPS is not supported by this browser. Enter coordinates manually.';
+  return;
+ }
+
+ gpsBtn.disabled=true;
+ $('mapDetectBtn').disabled=true;
+ gpsBtn.textContent='Detecting location…';
+ gpsStatus.textContent='Requesting location permission and detecting your coordinates…';
+ mapMessage('Waiting for GPS coordinates…');
+
+ navigator.geolocation.getCurrentPosition(position=>{
+  const lat=position.coords.latitude;
+  const lon=position.coords.longitude;
+  lastGpsAccuracy=position.coords.accuracy;
+
+  setMapLocation(lat,lon,{
+   source:'gps',
+   accuracy:lastGpsAccuracy
+  });
+
+  gpsStatus.textContent=`Location detected successfully. Accuracy: approximately ${Math.round(lastGpsAccuracy)} metres. Check the map before submitting.`;
+  gpsBtn.disabled=false;
+  $('mapDetectBtn').disabled=false;
+  gpsBtn.textContent='Refresh my location';
+ },error=>{
+  const messages={
+   1:'Location permission was denied. Allow location access in your browser settings.',
+   2:'Your location is unavailable. Try again or enter coordinates manually.',
+   3:'The location request timed out. Please try again.'
+  };
+  gpsStatus.textContent=messages[error.code]||'Unable to detect location. Enter coordinates manually.';
+  mapMessage(gpsStatus.textContent,true);
+  gpsBtn.disabled=false;
+  $('mapDetectBtn').disabled=false;
+  gpsBtn.textContent='Try location again';
+ },{enableHighAccuracy:true,timeout:20000,maximumAge:0});
+});
+
+/* ====================================================
+   CAMERA CONTROLS - EXISTING FUNCTIONALITY PRESERVED
+   ==================================================== */
+
+function stopCamera(){
+ if(cameraStream){
+  cameraStream.getTracks().forEach(track=>track.stop());
+  cameraStream=null;
+ }
+ cameraVideo.srcObject=null;
+}
+
+function closeCamera(){
+ stopCamera();
+ cameraPanel.classList.remove('open');
+ cameraCaptured.hidden=true;
+ cameraVideo.hidden=false;
+ capturePhotoBtn.hidden=false;
+ retakePhotoBtn.hidden=true;
+ usePhotoBtn.hidden=true;
+ openCameraBtn.disabled=false;
+}
+
+openCameraBtn.addEventListener('click',async()=>{
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+  cameraPanel.classList.add('open');
+  cameraStatus.textContent='Live camera requires HTTPS or localhost. Use Choose / Upload Photo, or open this page through a secure HTTPS connection.';
+  return;
+ }
+
+ openCameraBtn.disabled=true;
+ cameraPanel.classList.add('open');
+ cameraStatus.textContent='Requesting camera permission…';
+
+ try{
+  stopCamera();
+  cameraStream=await navigator.mediaDevices.getUserMedia({
+   audio:false,
+   video:{
+    facingMode:{ideal:'environment'},
+    width:{ideal:1280},
+    height:{ideal:720}
+   }
+  });
+  cameraVideo.srcObject=cameraStream;
+  cameraVideo.hidden=false;
+  cameraCaptured.hidden=true;
+  capturePhotoBtn.hidden=false;
+  retakePhotoBtn.hidden=true;
+  usePhotoBtn.hidden=true;
+  await cameraVideo.play();
+  cameraStatus.textContent='Position the issue inside the frame, then capture your photo.';
+ }catch(error){
+  stopCamera();
+  openCameraBtn.disabled=false;
+  cameraStatus.textContent=error.name==='NotAllowedError'
+   ?'Camera permission was denied. Allow camera access in your browser settings.'
+   :error.name==='NotFoundError'
+    ?'No available camera was found on this device.'
+    :'Could not open the camera. Check permissions, or use Choose / Upload Photo.';
+ }
+});
+
+capturePhotoBtn.addEventListener('click',()=>{
+ if(!cameraStream||!cameraVideo.videoWidth){
+  cameraStatus.textContent='Wait for the camera preview to appear, then try again.';
+  return;
+ }
+
+ const canvas=document.createElement('canvas');
+ canvas.width=cameraVideo.videoWidth;
+ canvas.height=cameraVideo.videoHeight;
+ canvas.getContext('2d').drawImage(cameraVideo,0,0,canvas.width,canvas.height);
+
+ canvas.toBlob(blob=>{
+  if(!blob){
+   cameraStatus.textContent='Could not capture the image. Please try again.';
+   return;
+  }
+  capturedBlob=blob;
+  if(capturedObjectUrl)URL.revokeObjectURL(capturedObjectUrl);
+  capturedObjectUrl=URL.createObjectURL(blob);
+  cameraCaptured.src=capturedObjectUrl;
+  cameraCaptured.hidden=false;
+  cameraVideo.hidden=true;
+  capturePhotoBtn.hidden=true;
+  retakePhotoBtn.hidden=false;
+  usePhotoBtn.hidden=false;
+  cameraStatus.textContent='Photo captured. Choose Use Photo to accept it or Retake to try again.';
+  stopCamera();
+ },'image/jpeg',0.88);
+});
+
+retakePhotoBtn.addEventListener('click',async()=>{
+ capturedBlob=null;
+ if(capturedObjectUrl){
+  URL.revokeObjectURL(capturedObjectUrl);
+  capturedObjectUrl=null;
+ }
+ cameraCaptured.removeAttribute('src');
+ cameraCaptured.hidden=true;
+ cameraVideo.hidden=false;
+ retakePhotoBtn.hidden=true;
+ usePhotoBtn.hidden=true;
+ capturePhotoBtn.hidden=false;
+ openCameraBtn.disabled=false;
+ openCameraBtn.click();
+});
+
+usePhotoBtn.addEventListener('click',()=>{
+ if(!capturedBlob)return;
+
+ const file=new File([capturedBlob],`urbaneye-photo-${Date.now()}.jpg`,{
+  type:'image/jpeg'
+ });
+
+ if(file.size>5*1024*1024){
+  cameraStatus.textContent='This photo exceeds the 5 MB limit. Retake it at a lower resolution.';
+  return;
+ }
+
+ const transfer=new DataTransfer();
+ transfer.items.add(file);
+ imageInput.files=transfer.files;
+ imageInput.dispatchEvent(new Event('change',{bubbles:true}));
+ selectedPhotoName.textContent=file.name;
+ removePhotoBtn.hidden=false;
+ closeCamera();
+});
+
+choosePhotoBtn.addEventListener('click',()=>imageInput.click());
+closeCameraBtn.addEventListener('click',closeCamera);
+
+removePhotoBtn.addEventListener('click',()=>{
+ imageInput.value='';
+ imageInput.dispatchEvent(new Event('change',{bubbles:true}));
+ selectedPhotoName.textContent='None';
+ removePhotoBtn.hidden=true;
+});
+
+window.addEventListener('pagehide',stopCamera);
+
+/* ====================================================
+   AI CLASSIFICATION - EXISTING ENDPOINT PRESERVED
+   ==================================================== */
+
+function resetAiClassification(message='Choose or capture a photo, then run AI classification.'){
+ aiPrediction=null;
+ aiResult.hidden=true;
+ aiDetails.textContent='';
+ aiExplanation.textContent='';
+ aiStatus.textContent=message;
+ classifyImageBtn.disabled=!(imageInput.files&&imageInput.files[0]);
+}
+
+classifyImageBtn.addEventListener('click',async()=>{
+ const file=imageInput.files&&imageInput.files[0];
+ if(!file){
+  aiStatus.textContent='Choose or capture a photo first.';
+  return;
+ }
+ if(file.size>5*1024*1024){
+  aiStatus.textContent='The photo must be 5 MB or smaller.';
+  return;
+ }
+
+ classifyImageBtn.disabled=true;
+ classifyImageBtn.textContent='Classifying photo…';
+ aiStatus.textContent='AI is examining the photo. This may take a moment.';
+ aiResult.hidden=true;
+
+ try{
+  const body=new FormData();
+  body.append('image',file);
+
+  const response=await fetch('/api/ai/classify-image',{
+   method:'POST',
+   headers:{Authorization:`Bearer ${token}`},
+   body
+  });
+  const data=await response.json().catch(()=>({}));
+
+  if(response.status===401){
+   location.replace('/login.html');
+   return;
+  }
+  if(!response.ok){
+   throw Error(data.message||'AI classification failed. You can still select a category manually.');
+  }
+
+  const prediction=data.prediction||data;
+  if(!prediction.category_id||!prediction.category_name){
+   throw Error('AI did not return a category available in UrbanEye. Please select a category manually.');
+  }
+
+  aiPrediction=prediction;
+  categorySelect.value=String(prediction.category_id);
+  categoryWasManuallyChanged=true;
+  categoryHint.textContent=`AI suggested: ${prediction.category_name}`+
+   (prediction.department_name?` → ${prediction.department_name}. Review or change it before submitting.`:'. Review or change it before submitting.');
+
+  const confidence=Number(prediction.confidence);
+  const confidenceText=Number.isFinite(confidence)
+   ?`${Math.round(Math.max(0,Math.min(1,confidence))*100)}%`
+   :'Not provided';
+
+  aiDetails.textContent=`Suggested category: ${prediction.category_name}. Confidence: ${confidenceText}.`+
+   (prediction.department_name?` Department: ${prediction.department_name}.`:'');
+  aiExplanation.textContent=prediction.explanation||prediction.visible_evidence||
+   'Review the image and confirm that the suggested category is correct.';
+  aiResult.hidden=false;
+  aiStatus.textContent='Classification complete. Review the suggested category before submitting.';
+ }catch(error){
+  aiPrediction=null;
+  aiStatus.textContent=error.message||'AI classification could not be completed. Choose a category manually.';
+ }finally{
+  classifyImageBtn.disabled=!(imageInput.files&&imageInput.files[0]);
+  classifyImageBtn.textContent='Classify photo with AI';
+ }
+});
+
+/* IMAGE VALIDATION AND PREVIEW */
+imageInput.addEventListener('change',e=>{
+ resetAiClassification();
+ const file=e.target.files[0];
+
+ if(previewUrl){
+  URL.revokeObjectURL(previewUrl);
+  previewUrl=null;
+ }
+ preview.removeAttribute('src');
+ preview.style.display='none';
+
+ if(!file){
+  selectedPhotoName.textContent='None';
+  removePhotoBtn.hidden=true;
+  return;
+ }
+
+ const allowed=['image/jpeg','image/png','image/webp','image/gif'];
+ if(!allowed.includes(file.type)){
+  e.target.value='';
+  selectedPhotoName.textContent='None';
+  removePhotoBtn.hidden=true;
+  resetAiClassification('Choose a supported photo to use AI classification.');
+  showMessage('Choose a JPG, PNG, WEBP or GIF image.','error','Unsupported image type');
+  return;
+ }
+
+ if(file.size>5*1024*1024){
+  e.target.value='';
+  selectedPhotoName.textContent='None';
+  removePhotoBtn.hidden=true;
+  resetAiClassification('Choose a photo that is 5 MB or smaller.');
+  showMessage('The selected image is larger than 5 MB. Please choose a smaller image.','error','Image is too large');
+  return;
+ }
+
+ selectedPhotoName.textContent=file.name;
+ removePhotoBtn.hidden=false;
+ previewUrl=URL.createObjectURL(file);
+ preview.src=previewUrl;
+ preview.style.display='block';
+
+ if(msg.classList.contains('error'))msg.className='message';
+});
+
+titleInput.addEventListener('input',updateCategorySuggestion);
+descriptionInput.addEventListener('input',updateCategorySuggestion);
+
+categorySelect.addEventListener('change',()=>{
+ if(categorySelect.value){
+  categoryWasManuallyChanged=true;
+  const c=categories.find(x=>String(x.category_id)===categorySelect.value);
+  if(c)categoryHint.textContent=`Selected category: ${c.category_name} → ${c.department_name}.`;
+ }
+});
+
+/* COORDINATE VALIDATION */
+function validateCoordinates(){
+ const lat=latitudeInput.value.trim();
+ const lon=longitudeInput.value.trim();
+
+ if(lat!==''&&(!Number.isFinite(Number(lat))||Number(lat)<-90||Number(lat)>90)){
+  showMessage('Latitude must be between -90 and 90.','error','Invalid latitude');
+  latitudeInput.focus();
+  return false;
+ }
+
+ if(lon!==''&&(!Number.isFinite(Number(lon))||Number(lon)<-180||Number(lon)>180)){
+  showMessage('Longitude must be between -180 and 180.','error','Invalid longitude');
+  longitudeInput.focus();
+  return false;
+ }
+
+ if((lat==='')!==(lon==='')){
+  showMessage('Enter both latitude and longitude, or leave both empty.','error','Incomplete coordinates');
+  return false;
+ }
+
+ return true;
+}
+
+/* ====================================================
+   REPORT SUBMISSION - EXISTING BACKEND PRESERVED
+   ==================================================== */
+
+form.addEventListener('submit',async e=>{
+ e.preventDefault();
+
+ if(reportSubmitted)return;
+ if(!form.reportValidity())return;
+
+ if(!categorySelect.value){
+  showMessage('Enter issue details that match a category or select a category before submitting.','error','Category required');
+  return;
+ }
+ if(!validateCoordinates())return;
+
+ btn.disabled=true;
+ btn.textContent='Submitting report…';
+
+ try{
+  const r=await fetch('/api/issues',{
+   method:'POST',
+   headers:{Authorization:`Bearer ${token}`},
+   body:new FormData(form)
+  });
+
+  let d={};
+  try{d=await r.json();}catch{}
+
+  if(r.status===401){
+   location.replace('/login.html');
+   return;
+  }
+
+  if(!r.ok){
+   throw Error(d.message||'Your report could not be submitted. Please try again.');
+  }
+
+  reportSubmitted=true;
+
+  if(aiPrediction&&d.issue_id){
+   try{
+    const aiSave=await fetch(`/api/ai/record/${d.issue_id}`,{
+     method:'POST',
+     headers:{
+      Authorization:`Bearer ${token}`,
+      'Content-Type':'application/json'
+     },
+     body:JSON.stringify({
+      category_name:aiPrediction.category_name,
+      confidence:aiPrediction.confidence
+     })
+    });
+
+    if(!aiSave.ok){
+     const saveData=await aiSave.json().catch(()=>({}));
+     console.error('AI metadata could not be saved:',saveData.message||aiSave.status);
+    }
+   }catch(aiSaveError){
+    console.error('AI metadata save failed:',aiSaveError);
+   }
+  }
+
+  const selected=categories.find(c=>String(c.category_id)===String(categorySelect.value));
+  const locationText=latitudeInput.value&&longitudeInput.value
+   ?` GPS: ${latitudeInput.value}, ${longitudeInput.value}.`
+   :' No GPS coordinates were provided.';
+
+  showMessage(
+   `Report ID: #${d.issue_id}. Category: ${d.category_name||selected?.category_name||'Selected category'}. Department: ${d.department_name||selected?.department_name||'Assigned department'}. Status: Pending. Your report and any attached photo have been submitted.${locationText}`,
+   'success',
+   '✓ Report submitted successfully'
+  );
+
+  btn.textContent='Report submitted';
+  categoryHint.textContent='This submitted report is locked to prevent an accidental duplicate. Use “Clear form for another report” to start a new one.';
+
+  Array.from(form.elements).forEach(el=>{
+   if(el.id!=='newReportBtn')el.disabled=true;
+  });
+
+  $('mapDetectBtn').disabled=true;
+  $('mapUpdateBtn').disabled=true;
+  $('mapClearBtn').disabled=true;
+  if(issueMarker&&issueMarker.dragging)issueMarker.dragging.disable();
+
+  $('afterSubmitActions').hidden=false;
+ }catch(error){
+  showMessage(error.message,'error','Submission failed');
+  btn.disabled=false;
+  btn.textContent='Submit report';
+ }
+});
+
+/* RESET FORM */
+$('newReportBtn').addEventListener('click',()=>{
+ closeCamera();
+ form.reset();
+ resetAiClassification();
+
+ reportSubmitted=false;
+ categoryWasManuallyChanged=false;
+
+ Array.from(form.elements).forEach(el=>el.disabled=false);
+ btn.disabled=false;
+ btn.textContent='Submit report';
+ $('afterSubmitActions').hidden=true;
+
+ if(previewUrl){
+  URL.revokeObjectURL(previewUrl);
+  previewUrl=null;
+ }
+ if(capturedObjectUrl){
+  URL.revokeObjectURL(capturedObjectUrl);
+  capturedObjectUrl=null;
+ }
+
+ capturedBlob=null;
+ cameraCaptured.removeAttribute('src');
+ cameraCaptured.hidden=true;
+ cameraVideo.hidden=false;
+ capturePhotoBtn.hidden=false;
+ retakePhotoBtn.hidden=true;
+ usePhotoBtn.hidden=true;
+ selectedPhotoName.textContent='None';
+ removePhotoBtn.hidden=true;
+ preview.removeAttribute('src');
+ preview.style.display='none';
+
+ gpsStatus.textContent='Your location has not been detected yet. Allow location access when prompted, or enter coordinates manually.';
+ gpsBtn.textContent='Detect my location';
+ gpsBtn.disabled=false;
+
+ $('mapDetectBtn').disabled=false;
+ $('mapUpdateBtn').disabled=false;
+ $('mapClearBtn').disabled=false;
+
+ if(issueMarker&&issueMarker.dragging)issueMarker.dragging.enable();
+ clearMapLocation();
+
+ msg.className='message';
+ msg.replaceChildren();
+ updateCategorySuggestion();
+ window.scrollTo({top:0,behavior:'smooth'});
+});
+
+/* LOG OUT */
+$('logout').addEventListener('click',e=>{
+ e.preventDefault();
+ localStorage.removeItem('urbaneye_token');
+ localStorage.removeItem('urbaneye_user');
+ location.href='/login.html';
+});
+
+loadCategories();
+initialiseMap();
+
+</script>
+</body>
+</html>

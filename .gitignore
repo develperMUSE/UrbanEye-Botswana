@@ -1,0 +1,20 @@
+# Installed Node.js dependencies
+node_modules/
+
+# Environment variables and secret keys
+.env
+.env.*
+!.env.example
+
+# Uploaded photographs
+uploads/*
+!uploads/.gitkeep
+
+# Log files
+*.log
+npm-debug.log*
+
+# Operating system files
+.DS_Store
+Thumbs.db
+*.bak

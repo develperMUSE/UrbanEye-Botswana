@@ -1,0 +1,542 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#174D3A">
+<title>Register | UrbanEye Botswana</title>
+
+<style>
+:root {
+    --forest: #174D3A;
+    --forest-dark: #103728;
+    --green: #286746;
+    --sage: #E7F0E6;
+    --cream: #FAF9F4;
+    --white: #FFFFFF;
+    --text: #20352A;
+    --muted: #718078;
+    --border: #DCE5DC;
+    --shadow: 0 24px 70px rgba(23,77,58,.10);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 28px 16px;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 8% 8%, #E4F0E1 0, transparent 30%),
+        radial-gradient(circle at 92% 90%, #E9EFE0 0, transparent 30%),
+        var(--cream);
+}
+
+input, select, button { font: inherit; }
+
+.page { width: 100%; max-width: 590px; margin: auto; }
+
+.brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 5px 0 24px;
+}
+
+.brand-mark {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    background: var(--forest);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px #174D3A25;
+}
+
+.brand-mark svg { width: 36px; height: 36px; }
+
+.brand-name {
+    color: var(--forest);
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.brand-country {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1.3px;
+    text-transform: uppercase;
+}
+
+.card {
+    background: var(--white);
+    border: 1px solid #E5EAE2;
+    border-radius: 24px;
+    padding: 35px;
+    box-shadow: var(--shadow);
+}
+
+.top-icon {
+    width: 49px;
+    height: 49px;
+    display: grid;
+    place-items: center;
+    background: var(--sage);
+    border-radius: 15px;
+    font-size: 23px;
+    margin-bottom: 19px;
+}
+
+h1 {
+    margin: 0;
+    color: var(--forest-dark);
+    font-size: 29px;
+    letter-spacing: -.8px;
+}
+
+.subtitle {
+    margin: 10px 0 23px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+label {
+    display: block;
+    margin: 17px 0 8px;
+    color: #31483A;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+input, select {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 13px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    outline: none;
+    color: var(--text);
+    background: #FCFDFB;
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+input::placeholder { color: #9AA69D; }
+
+input:focus, select:focus {
+    border-color: #5B9970;
+    box-shadow: 0 0 0 4px #4D8A5D18;
+    background: white;
+}
+
+.password-wrap { position: relative; }
+.password-input { padding-right: 76px; }
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: auto;
+    margin: 0;
+    padding: 7px 8px;
+    border: 0;
+    background: transparent;
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.hint {
+    margin-top: 7px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.role-note {
+    margin-top: 10px;
+    padding: 12px 13px;
+    background: #F2F7EF;
+    border: 1px solid #DFEADB;
+    border-radius: 11px;
+    color: #4D6854;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+#departmentGroup { display: none; }
+
+.department-preview {
+    display: none;
+    align-items: center;
+    gap: 13px;
+    margin-top: 12px;
+    padding: 14px;
+    background: #F2F7EF;
+    border: 1px solid #DFEADB;
+    border-radius: 13px;
+}
+
+.department-symbol {
+    width: 47px;
+    height: 47px;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    border-radius: 13px;
+    background: white;
+    border: 1px solid #E1E9DC;
+    font-size: 24px;
+}
+
+.department-preview strong { display: block; font-size: 13px; }
+.department-preview small { display: block; margin-top: 4px; color: var(--muted); line-height: 1.5; }
+
+.primary-button {
+    width: 100%;
+    min-height: 51px;
+    margin-top: 24px;
+    padding: 13px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--forest);
+    color: white;
+    font-weight: 750;
+    cursor: pointer;
+    box-shadow: 0 7px 15px #174D3A20;
+    transition: background .2s, transform .2s;
+}
+
+.primary-button:hover { background: var(--forest-dark); transform: translateY(-1px); }
+.primary-button:disabled { opacity: .65; cursor: wait; transform: none; }
+
+.message {
+    display: none;
+    margin-top: 18px;
+    padding: 13px 14px;
+    border-radius: 11px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.message.success { display: block; color: #17633D; background: #E8F6EC; border: 1px solid #CDE9D4; }
+.message.error { display: block; color: #922B32; background: #FFF0F0; border: 1px solid #F3D2D2; }
+.message.info { display: block; color: #315B43; background: #F0F6EC; border: 1px solid #DDE9D7; }
+
+.login-link {
+    margin-top: 23px;
+    padding-top: 20px;
+    border-top: 1px solid #EDF0EA;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.login-link a { color: var(--green); font-weight: 800; text-decoration: none; }
+.login-link a:hover { text-decoration: underline; }
+
+.footer {
+    text-align: center;
+    margin: 19px 0 0;
+    color: #87948A;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+@media (max-width: 500px) {
+    body { padding: 16px 12px; }
+    .card { padding: 25px 20px; border-radius: 20px; }
+    h1 { font-size: 26px; }
+}
+</style>
+</head>
+
+<body>
+<main class="page">
+
+    <div class="brand">
+        <div class="brand-mark" aria-label="UrbanEye Smart Eye logo">
+            <svg viewBox="0 0 48 48" fill="none" role="img" aria-hidden="true">
+                <path d="M4 24C9 14.5 16 10 24 10C32 10 39 14.5 44 24C39 33.5 32 38 24 38C16 38 9 33.5 4 24Z"
+                      stroke="#FFFFFF" stroke-width="2.8" stroke-linejoin="round"/>
+                <circle cx="24" cy="24" r="9" stroke="#D6F3C7" stroke-width="2.8"/>
+                <circle cx="24" cy="24" r="3.5" fill="#D6F3C7"/>
+                <path d="M29 8C31 4.5 35 4 38 5C37.5 9 34.5 12 30 12"
+                      stroke="#B9E6A7" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </div>
+        <div>
+            <div class="brand-name">UrbanEye</div>
+            <div class="brand-country">Botswana · Civic Solutions</div>
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="top-icon" aria-hidden="true">🌱</div>
+        <h1>Create your account</h1>
+        <p class="subtitle">Join your community and help make local services better.</p>
+
+        <form id="registerForm">
+            <label for="full_name">Full name</label>
+            <input
+                type="text"
+                id="full_name"
+                name="full_name"
+                autocomplete="name"
+                required
+                maxlength="150"
+                placeholder="Enter your full name"
+            >
+
+            <label for="email">Email address</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="email"
+                required
+                maxlength="254"
+                placeholder="you@example.com"
+            >
+
+            <label for="password">Create password</label>
+            <div class="password-wrap">
+                <input
+                    class="password-input"
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="new-password"
+                    required
+                    minlength="8"
+                    placeholder="Create a strong password"
+                >
+                <button class="toggle-password" type="button" id="togglePassword"
+                        aria-controls="password" aria-pressed="false">Show</button>
+            </div>
+            <div class="hint">Use at least 8 characters. A longer password is recommended.</div>
+
+            <label for="role">Account type</label>
+            <select id="role" name="role" required>
+                <option value="">Choose your account type</option>
+                <option value="citizen">Citizen — report and track issues</option>
+                <option value="officer">Officer — manage assigned issues</option>
+            </select>
+
+            <div class="role-note" id="roleNote" aria-live="polite">
+                Citizens can report local issues and follow their progress.
+            </div>
+
+            <div id="departmentGroup">
+                <label for="department_id">Assigned department</label>
+                <select id="department_id" name="department_id">
+                    <option value="">Choose your department</option>
+                    <option value="1">⚡ Botswana Power Corporation (BPC)</option>
+                    <option value="2">💧 Water Utilities Corporation (WUC)</option>
+                    <option value="3">🛣️ Department of Roads</option>
+                    <option value="4">🏛️ Local District and Town Councils</option>
+                    <option value="5">🚦 DRTS</option>
+                    <option value="6">♻️ Waste Management</option>
+                </select>
+
+                <div class="department-preview" id="departmentPreview" aria-live="polite">
+                    <div class="department-symbol" id="departmentSymbol" aria-hidden="true">🏢</div>
+                    <div>
+                        <strong id="departmentTitle">Department selected</strong>
+                        <small id="departmentDescription">Choose the department you work with.</small>
+                    </div>
+                </div>
+            </div>
+
+            <button class="primary-button" type="submit" id="registerButton">Create account</button>
+        </form>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <div class="login-link">
+            Already have an account? <a href="/login.html">Sign in</a>
+        </div>
+    </section>
+
+    <p class="footer">UrbanEye Botswana · Building cleaner, safer and more connected communities.</p>
+</main>
+
+<script>
+const roleSelect = document.getElementById('role');
+const departmentGroup = document.getElementById('departmentGroup');
+const departmentSelect = document.getElementById('department_id');
+const departmentPreview = document.getElementById('departmentPreview');
+const departmentSymbol = document.getElementById('departmentSymbol');
+const departmentTitle = document.getElementById('departmentTitle');
+const departmentDescription = document.getElementById('departmentDescription');
+const roleNote = document.getElementById('roleNote');
+const passwordInput = document.getElementById('password');
+const togglePassword = document.getElementById('togglePassword');
+const registerForm = document.getElementById('registerForm');
+const registerButton = document.getElementById('registerButton');
+const message = document.getElementById('message');
+
+const departments = {
+    '1': {
+        icon: '⚡',
+        name: 'Botswana Power Corporation',
+        description: 'Electricity supply and power-related issues.'
+    },
+    '2': {
+        icon: '💧',
+        name: 'Water Utilities Corporation',
+        description: 'Water supply, leaks and water infrastructure.'
+    },
+    '3': {
+        icon: '🛣️',
+        name: 'Department of Roads',
+        description: 'Road damage, potholes and road infrastructure.'
+    },
+    '4': {
+        icon: '🏛️',
+        name: 'Local District and Town Councils',
+        description: 'Council services and local community infrastructure.'
+    },
+    '5': {
+        icon: '🚦',
+        name: 'DRTS',
+        description: 'Transport and road traffic-related services.'
+    },
+    '6': {
+        icon: '♻️',
+        name: 'Waste Management',
+        description: 'Waste collection, illegal dumping and cleanliness.'
+    }
+};
+
+togglePassword.addEventListener('click', function () {
+    const shouldShow = passwordInput.type === 'password';
+    passwordInput.type = shouldShow ? 'text' : 'password';
+    togglePassword.textContent = shouldShow ? 'Hide' : 'Show';
+    togglePassword.setAttribute('aria-pressed', String(shouldShow));
+});
+
+roleSelect.addEventListener('change', function () {
+    const isOfficer = this.value === 'officer';
+
+    departmentGroup.style.display = isOfficer ? 'block' : 'none';
+    departmentSelect.required = isOfficer;
+
+    roleNote.textContent = isOfficer
+        ? 'Officer accounts need an assigned department. Select the department you are authorized to work with.'
+        : 'Citizens can report local issues and follow their progress.';
+
+    if (!isOfficer) {
+        departmentSelect.value = '';
+        departmentPreview.style.display = 'none';
+    }
+});
+
+departmentSelect.addEventListener('change', function () {
+    const department = departments[this.value];
+
+    if (!department) {
+        departmentPreview.style.display = 'none';
+        return;
+    }
+
+    departmentSymbol.textContent = department.icon;
+    departmentTitle.textContent = department.name;
+    departmentDescription.textContent = department.description;
+    departmentPreview.style.display = 'flex';
+});
+
+registerForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const fullName = document.getElementById('full_name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = passwordInput.value;
+    const role = roleSelect.value;
+
+    if (fullName.length < 2) {
+        message.className = 'message error';
+        message.textContent = 'Please enter your full name.';
+        return;
+    }
+
+    if (password.length < 8) {
+        message.className = 'message error';
+        message.textContent = 'Your password must contain at least 8 characters.';
+        return;
+    }
+
+    if (role === 'officer' && !departmentSelect.value) {
+        message.className = 'message error';
+        message.textContent = 'Please select your department.';
+        return;
+    }
+
+    const data = {
+        full_name: fullName,
+        email: email,
+        password: password,
+        role: role
+    };
+
+    if (role === 'officer') {
+        data.department_id = departmentSelect.value;
+    }
+
+    message.className = 'message info';
+    message.textContent = 'Creating your account…';
+    registerButton.disabled = true;
+    registerButton.textContent = 'Creating account…';
+
+    try {
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        let result;
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error('The server returned an unexpected response. Please try again.');
+        }
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Registration failed. Please check your details.');
+        }
+
+        message.className = 'message success';
+        message.textContent = 'Account created successfully. Redirecting to login…';
+
+        registerForm.reset();
+        departmentGroup.style.display = 'none';
+        departmentPreview.style.display = 'none';
+        departmentSelect.required = false;
+        roleNote.textContent = 'Citizens can report local issues and follow their progress.';
+
+        window.setTimeout(function () {
+            window.location.href = '/login.html';
+        }, 1500);
+
+    } catch (error) {
+        message.className = 'message error';
+        message.textContent = error.message || 'Unable to create your account. Please try again.';
+        registerButton.disabled = false;
+        registerButton.textContent = 'Create account';
+    }
+});
+</script>
+</body>
+</html>
+```

@@ -1,0 +1,1296 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#174d3a">
+<title>UrbanEye Botswana | Dashboard</title>
+
+<style>
+:root {
+  --navy:#174d3a;
+  --navy2:#21664c;
+  --blue:#34765b;
+  --teal:#19856b;
+  --mint:#e3f4e9;
+  --bg:#f4f8f3;
+  --ink:#20352b;
+  --muted:#708077;
+  --line:#e0e9e1;
+  --white:#fff;
+  --amber:#b7791f;
+  --red:#bd4242;
+  --green:#20815a;
+  --shadow:0 10px 30px rgba(27,70,48,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font:14px/1.6 "Segoe UI",Arial,sans-serif;
+  color:var(--ink);
+  background:radial-gradient(ellipse at 90% 0%,#dcefe2,transparent 32%),var(--bg);
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:not-allowed}
+[hidden]{display:none!important}
+a{color:inherit}
+header{
+  position:sticky;top:0;z-index:20;
+  background:rgba(23,77,58,.97);
+  backdrop-filter:blur(14px);
+  color:white;
+  padding:12px max(18px,calc((100% - 1380px)/2));
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:850}
+.brand-mark{
+  width:42px;height:42px;border-radius:13px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#d8f2df,#8ed3a7);
+  color:#174d3a;font-size:25px;
+}
+.brand span{color:#b9edc8}
+nav{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+nav a{
+  color:#e2efe5;text-decoration:none;
+  padding:9px 11px;border-radius:9px;
+  font-size:13px;font-weight:650;
+}
+nav a:hover,nav a.active{background:#ffffff18;color:white}
+.btn{
+  border:1px solid transparent;border-radius:10px;
+  padding:10px 14px;background:var(--blue);color:white;
+  font-weight:750;font-size:13px;
+  display:inline-flex;justify-content:center;align-items:center;gap:7px;
+  text-decoration:none;
+}
+.btn:hover{filter:brightness(1.06)}
+.btn.secondary{background:#edf4ee;color:var(--navy);border-color:#dce8de}
+.btn.teal{background:var(--teal);color:white}
+.btn.dark{background:var(--navy);color:white}
+.btn.outline{background:white;color:var(--navy);border-color:var(--line)}
+main{max-width:1380px;margin:auto;padding:27px 22px 42px}
+.hero{
+  padding:30px;border-radius:23px;color:white;
+  background:linear-gradient(120deg,#174d3a,#24694b 65%,#33866a);
+  box-shadow:0 17px 40px #174d3a18;
+}
+.hero-inner{display:flex;justify-content:space-between;align-items:center;gap:22px;flex-wrap:wrap}
+.eyebrow{color:#b7edc8;font-weight:850;text-transform:uppercase;font-size:10px;letter-spacing:1.7px}
+.hero h1{margin:6px 0;font-size:clamp(25px,3vw,35px)}
+.hero p{color:#e0eee4;max-width:650px;margin:0}
+.hero .btn{background:#d5f0dc;color:#174d3a}
+.hero-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:17px}
+.hero-chip{border:1px solid #ffffff28;background:#ffffff0d;border-radius:9px;padding:6px 10px;font-size:11px}
+.hero-actions{display:flex;gap:9px;flex-wrap:wrap}
+.section-heading{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin:27px 0 13px}
+.section-heading h2{margin:0;font-size:18px}
+.section-heading p{margin:3px 0;color:var(--muted);font-size:12px}
+.section-tag{color:#42634e;background:#e7f1e8;padding:5px 9px;border-radius:8px;font-size:11px;font-weight:750}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin:17px 0}
+.card,.panel{background:white;border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow)}
+.card{padding:19px;min-width:0;border-top:3px solid var(--accent,var(--blue))}
+.card-top{display:flex;justify-content:space-between;align-items:center}
+.stat-label{color:var(--muted);font-size:12px;font-weight:750}
+.stat-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:#edf4ee;color:var(--accent,var(--blue));font-size:19px}
+.stat{font-size:34px;font-weight:850;margin:12px 0 1px}
+.stat-foot{color:var(--muted);font-size:11px}
+.insight-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.insight-card{padding:17px;background:white;border:1px solid var(--line);border-radius:15px}
+.insight-title{color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase}
+.insight-value{font-size:22px;font-weight:850;margin:5px 0}
+.insight-description{color:var(--muted);font-size:12px}
+.mini-track{height:7px;background:#edf2ed;border-radius:20px;overflow:hidden;margin-top:12px}
+.mini-fill{height:100%;width:0;background:var(--teal)}
+.analytics-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:17px}
+.panel{padding:21px;min-width:0}
+.panel h2{font-size:16px;margin:0}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.muted{color:var(--muted)}
+.small{font-size:11px}
+.sub{font-size:11px;color:var(--muted)}
+.bar-row{display:grid;grid-template-columns:minmax(90px,1fr) minmax(50px,2fr) 35px;align-items:center;gap:10px;margin:16px 0;font-size:11px}
+.bar-track{height:9px;background:#edf2ed;border-radius:20px;overflow:hidden}
+.bar-fill{height:100%;background:linear-gradient(90deg,#34765b,#39a77d);border-radius:20px}
+.bar-number{text-align:right;font-weight:800}
+.monthly-chart{height:180px;display:flex;align-items:stretch;gap:10px;padding:12px 2px 0;overflow-x:auto}
+.month-column{flex:1;min-width:42px;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px}
+.month-value,.month-label{font-size:10px;color:var(--muted)}
+.month-bar-area{width:100%;height:125px;display:flex;align-items:end;justify-content:center}
+.month-bar{width:min(36px,78%);border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,#48b781,#34765b)}
+.demand-list{display:flex;flex-direction:column;gap:10px;margin-top:15px}
+.demand-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid var(--line);border-radius:11px;padding:12px}
+.demand-row-title{font-size:12px;font-weight:800}
+.demand-row-meta{font-size:10px;color:var(--muted)}
+.vote-number{background:#e1f3e7;color:#216a48;border-radius:9px;padding:7px 9px;font-size:11px;font-weight:850}
+.empty,.notice{padding:23px;text-align:center;color:var(--muted);font-size:13px}
+.error{color:#a92c2c!important}
+.success{color:#126f4e!important}
+.filters{display:grid;grid-template-columns:minmax(170px,1.5fr) repeat(3,minmax(130px,.8fr)) auto;gap:9px;margin:16px 0}
+input,select,textarea{min-width:0;width:100%;border:1px solid #d8e4da;border-radius:10px;padding:10px 11px;background:white;color:var(--ink)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:820px;background:white}
+th,td{text-align:left;padding:13px 11px;border-bottom:1px solid #edf2ed;font-size:11px;vertical-align:middle}
+th{background:#f3f7f2;color:#6e8173;font-size:10px;text-transform:uppercase;letter-spacing:.6px}
+tbody tr:hover{background:#f7fbf6}
+.issue-title{font-weight:800}
+.status{display:inline-block;padding:5px 8px;border-radius:30px;font-size:10px;font-weight:850;white-space:nowrap}
+.status.Pending{background:#fff1d6;color:#92600e}
+.status.In-Progress{background:#e5efff;color:#1b58a7}
+.status.Resolved{background:#dcf7e9;color:#126f4e}
+.actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.actions .btn{padding:7px 9px;font-size:10px}
+.statusSelect{max-width:120px;padding:7px;font-size:10px}
+.results-footer{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-top:12px}
+.priority-panel{margin-top:17px;padding:20px;border:1px solid #cce7d4;background:#eff8f0;border-radius:16px}
+.priority-panel h2{margin:0;color:#216a48;font-size:16px}
+.community-section{margin-top:25px;scroll-margin-top:85px}
+.community-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.community-card{border:1px solid var(--line);border-radius:14px;padding:17px;background:white}
+.community-card h3{font-size:14px;margin:0 0 8px}
+.community-description{white-space:pre-wrap;overflow-wrap:anywhere;color:#465d4c;font-size:12px}
+.vote-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:13px;margin-top:12px}
+.detail-dialog{width:min(760px,calc(100% - 24px));max-height:88vh;overflow:auto;border:1px solid var(--line);border-radius:17px;padding:0;color:var(--ink)}
+.detail-dialog::backdrop{background:#10291dcc}
+.detail-head{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--navy);color:white;padding:16px 20px}
+.detail-head h2{margin:0;font-size:17px}
+.detail-body{padding:20px}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.detail-item{padding:11px;background:#f4f8f3;border-radius:9px;overflow-wrap:anywhere;font-size:12px}
+.detail-item strong{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:4px}
+.detail-description{white-space:pre-wrap;overflow-wrap:anywhere}
+.detail-image{display:block;max-width:100%;max-height:360px;border-radius:10px;margin-top:10px}
+.notice-box{margin:15px 0;padding:12px 14px;border-radius:11px;background:#fff8e8;border:1px solid #f3e0b5;color:#775116;font-size:12px}
+.history-panel{margin-top:22px;padding:18px;background:#f8fbf8;border:1px solid #dce9df;border-radius:14px}
+.history-panel h3{margin:0 0 6px;color:var(--navy);font-size:17px}
+.history-subtitle{color:var(--muted);font-size:12px}
+.history-timeline{margin-left:9px;padding-left:22px;border-left:3px solid #c9e4d0}
+.history-entry{position:relative;margin-bottom:17px;padding:15px;background:white;border:1px solid var(--line);border-radius:11px}
+.history-entry::before{content:"";position:absolute;top:18px;left:-31px;width:13px;height:13px;background:var(--teal);border:3px solid white;border-radius:50%;box-shadow:0 0 0 2px #c9e4d0}
+.history-transition{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+.history-meta{color:var(--muted);font-size:12px}
+.history-comment{margin-top:12px;padding:11px 12px;background:#eef6ef;border-left:3px solid var(--teal);border-radius:8px;font-size:12px;white-space:pre-wrap}
+footer{padding:20px;text-align:center;color:var(--muted);font-size:11px}
+
+/* MONTH 4 WEEK 1: NOTIFICATION CENTRE */
+.notification-wrap{position:relative}
+.notification-btn{position:relative;background:#ffffff18;border:1px solid #ffffff35;border-radius:10px;color:white;padding:9px 12px;font-weight:750}
+.notification-count{position:absolute;top:-7px;right:-7px;background:#e04b4b;color:white;border-radius:20px;padding:1px 6px;font-size:10px;min-width:19px;text-align:center}
+.notification-panel{position:absolute;right:0;top:calc(100% + 12px);width:min(390px,calc(100vw - 30px));max-height:490px;overflow:auto;background:white;color:var(--ink);border:1px solid var(--line);border-radius:15px;box-shadow:0 18px 50px #10291d44;z-index:50}
+.notification-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:15px;border-bottom:1px solid var(--line)}
+.notification-head h3{margin:0;font-size:15px}
+.notification-list{max-height:385px;overflow:auto}
+.notification-item{padding:14px 15px;border-bottom:1px solid var(--line);cursor:pointer}
+.notification-item:hover{background:#f2f8f3}
+.notification-item.unread{background:#eaf7ed;border-left:4px solid var(--teal)}
+.notification-title{font-size:12px;font-weight:850}
+.notification-message{font-size:12px;color:#52675a;margin:5px 0}
+.notification-date{font-size:10px;color:var(--muted)}
+.notification-empty{padding:22px;text-align:center;color:var(--muted);font-size:12px}
+.notification-head .btn{padding:6px 9px;font-size:10px}
+
+@media(max-width:1000px){
+  .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .analytics-grid{grid-template-columns:1fr}
+  .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .filters input{grid-column:1/-1}
+}
+@media(max-width:650px){
+  header{position:static}
+  main{padding:17px 12px 30px}
+  .hero{padding:21px 18px}
+  .cards{gap:10px}
+  .card{padding:14px}
+  .stat{font-size:29px}
+  .insight-grid,.community-list,.detail-grid{grid-template-columns:1fr}
+  .panel{padding:15px}
+  .filters{grid-template-columns:1fr 1fr}
+  .filters input{grid-column:1/-1}
+  nav{width:100%}
+  nav a{font-size:11px;padding:8px}
+  .brand{font-size:18px}
+}
+/* URBANEYE_DEPARTMENT_ICONS_V1 */
+.department-identity {
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  vertical-align:middle;
+  max-width:100%;
+}
+.department-symbol {
+  display:inline-grid;
+  place-items:center;
+  width:37px;
+  height:37px;
+  flex-shrink:0;
+  background:#e3f4e9;
+  border:1px solid #cce7d4;
+  border-radius:11px;
+  font-size:21px;
+}
+.department-symbol.large {
+  width:52px;
+  height:52px;
+  font-size:29px;
+  border-radius:14px;
+}
+.department-name {
+  display:block;
+  font-weight:800;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.department-caption {
+  display:block;
+  font-size:10px;
+  color:#708077;
+}
+.department-route {
+  display:flex;
+  align-items:center;
+  margin-top:5px;
+}
+.officer-department {
+  display:flex;
+  align-items:center;
+  width:fit-content;
+  max-width:100%;
+  margin-top:15px;
+  padding:12px 15px;
+  border:1px solid #ffffff40;
+  border-radius:14px;
+  background:#ffffff15;
+}
+.officer-department .department-name {
+  color:white;
+  font-size:14px;
+}
+.officer-department .department-caption {
+  color:#d8f1e0;
+}
+.destination-panel {
+  padding:15px;
+  background:#edf8f0;
+  border:1px solid #cbe6d2;
+  border-radius:12px;
+  margin-bottom:15px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark">◉</div>
+    <div>UrbanEye <span>Botswana</span></div>
+  </div>
+
+  <nav aria-label="Main navigation">
+    <a class="active" href="/dashboard.html">Dashboard</a>
+    <a href="/report.html" id="navReport">Report an issue</a>
+    <a href="#reports">Reports</a>
+    <button class="btn teal" id="communityBtn" type="button" hidden>♡ Community voting</button>
+
+    <!-- MONTH 4 WEEK 1: NOTIFICATIONS -->
+    <div class="notification-wrap" id="notificationWrap">
+      <button class="notification-btn" id="notificationBtn"
+              type="button" aria-label="Notifications"
+              aria-expanded="false" aria-controls="notificationPanel">
+        🔔 Notifications
+        <span class="notification-count" id="notificationCount" hidden>0</span>
+      </button>
+
+      <section class="notification-panel" id="notificationPanel" hidden>
+        <div class="notification-head">
+          <h3>Notifications</h3>
+          <button class="btn secondary" id="markAllReadBtn" type="button">Mark all read</button>
+        </div>
+        <div class="notification-list" id="notificationList">
+          <div class="notification-empty">Loading notifications…</div>
+        </div>
+      </section>
+    </div>
+
+    <button class="btn secondary" id="logoutBtn" type="button">Log out ↗</button>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="eyebrow">Smart community intelligence</div>
+        <h1 id="greeting">Your dashboard</h1>
+        <p id="roleText">A clearer view of community issues, service delivery and progress.</p>
+        <div id="officerDepartmentIdentity" class="officer-department" hidden></div>
+        <div class="hero-meta">
+          <span class="hero-chip">◉ Live API data</span>
+          <span class="hero-chip" id="roleChip">Account overview</span>
+          <span class="hero-chip" id="departmentChip" hidden></span>
+          <span class="hero-chip" id="lastUpdated">Waiting for data…</span>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn" href="/report.html" id="newReportLink">＋ New report</a>
+        <button class="btn outline" id="refreshBtn" type="button">↻ Refresh insights</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="notice" class="notice-box" role="status" hidden></div>
+
+  <div class="section-heading">
+    <div>
+      <h2>Service delivery at a glance</h2>
+      <p>Report totals returned by your authorised dashboard endpoint.</p>
+    </div>
+    <span class="section-tag" id="summaryScope">Current account scope</span>
+  </div>
+
+  <section class="cards" aria-label="Report summary">
+    <article class="card" style="--accent:#34765b">
+      <div class="card-top"><div class="stat-label">Total reports</div><div class="stat-icon">▤</div></div>
+      <div class="stat" id="total">—</div>
+      <div class="stat-foot">Reports in dashboard summary</div>
+    </article>
+    <article class="card" style="--accent:#b7791f">
+      <div class="card-top"><div class="stat-label">Awaiting action</div><div class="stat-icon">◷</div></div>
+      <div class="stat" id="pending">—</div>
+      <div class="stat-foot">Pending reports</div>
+    </article>
+    <article class="card" style="--accent:#3476b5">
+      <div class="card-top"><div class="stat-label">In progress</div><div class="stat-icon">↗</div></div>
+      <div class="stat" id="inProgress">—</div>
+      <div class="stat-foot">Reports being worked on</div>
+    </article>
+    <article class="card" style="--accent:#20815a">
+      <div class="card-top"><div class="stat-label">Resolved</div><div class="stat-icon">✓</div></div>
+      <div class="stat" id="resolved">—</div>
+      <div class="stat-foot">Reports marked complete</div>
+    </article>
+  </section>
+
+  <div class="section-heading">
+    <div>
+      <h2>Performance intelligence</h2>
+      <p>Calculated from the statistics returned by the API.</p>
+    </div>
+    <span class="section-tag">Key indicators</span>
+  </div>
+
+  <section class="insight-grid">
+    <article class="insight-card">
+      <div class="insight-title">Resolution rate</div>
+      <div class="insight-value" id="resolutionRate">—</div>
+      <div class="insight-description">Resolved reports as a share of all reports.</div>
+      <div class="mini-track"><div class="mini-fill" id="resolutionFill"></div></div>
+    </article>
+    <article class="insight-card">
+      <div class="insight-title">Open workload</div>
+      <div class="insight-value" id="openWorkload">—</div>
+      <div class="insight-description">Pending plus in-progress reports.</div>
+    </article>
+    <article class="insight-card">
+      <div class="insight-title">Community priorities</div>
+      <div class="insight-value" id="priorityCount">—</div>
+      <div class="insight-description">Votes on visible reports.</div>
+    </article>
+  </section>
+
+  <div class="analytics-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Reports by category</h2>
+        <span class="sub">Category distribution</span>
+      </div>
+      <div id="categoryChart" class="empty">Loading categories…</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Monthly activity</h2>
+        <span class="sub">Reports over time</span>
+      </div>
+      <div id="monthlyChart" class="monthly-chart"></div>
+    </section>
+  </div>
+
+  <section class="priority-panel" id="priorityPanel" hidden>
+    <h2>Highest community demand</h2>
+    <p class="sub">Top reports ranked by community votes.</p>
+    <div class="demand-list" id="priorityList"></div>
+  </section>
+
+  <div class="section-heading" id="reports">
+    <div>
+      <h2>Reported community issues</h2>
+      <p>Search, filter and manage the reports visible to your account.</p>
+    </div>
+    <span class="section-tag" id="resultsCount">Loading…</span>
+  </div>
+
+  <section class="panel">
+    <div class="filters">
+      <input id="searchInput" type="search" placeholder="Search reports…">
+      <select id="statusFilter">
+        <option value="">All statuses</option>
+        <option>Pending</option>
+        <option>In Progress</option>
+        <option>Resolved</option>
+      </select>
+      <select id="categoryFilter">
+        <option value="">All categories</option>
+      </select>
+      <select id="sortFilter">
+        <option value="newest">Newest first</option>
+        <option value="votes">Most votes</option>
+      </select>
+      <button class="btn secondary" id="clearFilters" type="button">Clear</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Report</th>
+            <th>Category / Department</th>
+            <th>Status</th>
+            <th>Community votes</th>
+            <th>Submitted</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="reportsBody">
+          <tr><td colspan="6" class="empty">Loading reports…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="results-footer">
+      <span class="sub" id="tableSummary"></span>
+      <button class="btn secondary" id="reloadReports" type="button">Refresh reports</button>
+    </div>
+  </section>
+
+  <section class="community-section" id="communitySection" hidden>
+    <div class="section-heading">
+      <div>
+        <h2>Community voting and validation</h2>
+        <p>Support unresolved reports submitted by other citizens.</p>
+      </div>
+      <span class="section-tag">Month 3 · Week 3</span>
+    </div>
+    <div class="panel">
+      <p class="muted small">
+        You may vote once per report. You cannot vote for your own report,
+        and resolved reports are excluded.
+      </p>
+      <button class="btn secondary" id="refreshCommunity" type="button">Refresh community reports</button>
+      <button class="btn outline" id="backToDashboard" type="button">Back to dashboard</button>
+      <div class="community-list" id="communityList" style="margin-top:15px"></div>
+    </div>
+  </section>
+</main>
+
+<dialog class="detail-dialog" id="detailDialog">
+  <div class="detail-head">
+    <h2>Report details</h2>
+    <button class="btn secondary" id="closeDetails" type="button">Close ×</button>
+  </div>
+  <div class="detail-body" id="detailContent"></div>
+</dialog>
+
+<footer>UrbanEye <span style="color:#19856b;font-weight:850">Botswana</span> · Community issue reporting and monitoring</footer>
+
+<script>
+'use strict';
+
+const token = localStorage.getItem('urbaneye_token');
+const $ = id => document.getElementById(id);
+
+let currentUser = null;
+let allIssues = [];
+let categories = [];
+let communityIssues = [];
+let notifications = [];
+
+if (!token) {
+  window.location.replace('/login.html');
+}
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[char]));
+}
+
+function formatDate(value) {
+  if (!value) return 'Not available';
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? 'Not available' : d.toLocaleString();
+}
+
+function statusBadge(status) {
+  const value = String(status || 'Pending');
+  return `<span class="status ${esc(value.replace(/\s+/g,'-'))}">${esc(value)}</span>`;
+}
+
+/* MONTH 4 WEEK 2 - DEPARTMENT VISUAL IDENTITY */
+
+function departmentSymbol(name, category='') {
+  const text = (String(name || '') + ' ' + String(category || '')).toLowerCase();
+
+  if (/water|pipe|drain|sewer|sanitation/.test(text)) return '💧';
+  if (/road|transport|traffic|pothole/.test(text)) return '🛣️';
+  if (/electric|power|light|energy/.test(text)) return '💡';
+  if (/waste|refuse|dump|environment|clean|rubbish/.test(text)) return '♻️';
+  if (/health|clinic|hospital/.test(text)) return '🏥';
+  if (/park|garden|recreation/.test(text)) return '🌳';
+  if (/housing|building|planning|land/.test(text)) return '🏘️';
+  if (/fire|emergency|disaster/.test(text)) return '🚒';
+  if (/security|police|safety/.test(text)) return '🛡️';
+  if (/education|school/.test(text)) return '📚';
+  if (/information|ict|technology|computer/.test(text)) return '💻';
+
+  return '🏛️';
+}
+
+function departmentIdentity(name, category='', size='compact', caption='Responsible department') {
+  const department = String(name || '').trim() || 'Unassigned department';
+  const symbol = departmentSymbol(department, category);
+
+  return `
+    <span class="department-identity">
+      <span class="department-symbol ${esc(size)}"
+            role="img" aria-label="Department service icon">${symbol}</span>
+      <span>
+        <span class="department-name">${esc(department)}</span>
+        ${caption ? `<span class="department-caption">${esc(caption)}</span>` : ''}
+      </span>
+    </span>
+  `;
+}
+
+function findUserDepartment() {
+  if (!currentUser) return '';
+
+  if (currentUser.department_name) {
+    return currentUser.department_name;
+  }
+
+  const found = categories.find(c =>
+    String(c.department_id) === String(currentUser.department_id)
+  );
+
+  return found?.department_name || '';
+}
+
+function renderOfficerDepartment() {
+  const element = document.getElementById('officerDepartmentIdentity');
+  if (!element) return;
+
+  const name = currentUser?.role === 'officer'
+    ? findUserDepartment()
+    : '';
+
+  element.hidden = !name;
+
+  if (name) {
+    element.innerHTML = departmentIdentity(
+      name, '', 'large', 'Your assigned department'
+    );
+  }
+}
+function getVoteCount(issue) {
+  return Number(issue.vote_count ?? issue.votes_count ?? issue.votes ?? 0) || 0;
+}
+
+async function api(url, options = {}) {
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    ...(options.body ? {'Content-Type':'application/json'} : {}),
+    ...(options.headers || {})
+  };
+
+  const response = await fetch(url, {...options, headers});
+  let data;
+
+  try {
+    data = await response.json();
+  } catch {
+    data = {};
+  }
+
+  if (response.status === 401) {
+    localStorage.removeItem('urbaneye_token');
+    window.location.replace('/login.html');
+    throw new Error('Your session expired. Please log in again.');
+  }
+
+  if (!response.ok || data.success === false) {
+    throw new Error(data.message || `Request failed (${response.status}).`);
+  }
+
+  return data;
+}
+
+function showNotice(message, type = 'info') {
+  const element = $('notice');
+  element.textContent = message;
+  element.className = 'notice-box ' + (type === 'error' ? 'error' : type === 'success' ? 'success' : '');
+  element.hidden = false;
+}
+
+function isManager() {
+  return currentUser && ['admin','officer'].includes(currentUser.role);
+}
+
+async function loadUser() {
+  const data = await api('/api/auth/me');
+  currentUser = data.user || data;
+  renderOfficerDepartment();
+
+  const role = currentUser.role || 'citizen';
+  const name = currentUser.full_name || 'User';
+
+  $('greeting').textContent = `Welcome, ${name}`;
+  $('roleChip').textContent = role.charAt(0).toUpperCase() + role.slice(1);
+
+  $('roleText').textContent = role === 'citizen'
+    ? 'Track your reports, follow their progress and support community priorities.'
+    : role === 'officer'
+      ? 'Monitor assigned department reports and update service delivery progress.'
+      : 'Monitor community reports, department performance and overall service delivery.';
+
+  $('summaryScope').textContent = role === 'citizen'
+    ? 'My reports'
+    : role === 'officer'
+      ? 'Department reports'
+      : 'All reports';
+
+  $('priorityPanel').hidden = !isManager();
+  $('communityBtn').hidden = role !== 'citizen';
+
+  if (currentUser.department_name) {
+    $('departmentChip').textContent = currentUser.department_name;
+    $('departmentChip').hidden = false;
+  }
+}
+
+async function loadCategories() {
+  const data = await api('/api/issues/categories');
+  categories = Array.isArray(data.categories) ? data.categories : [];
+  renderOfficerDepartment();
+
+  $('categoryFilter').innerHTML =
+    '<option value="">All categories</option>' +
+    categories.map(c =>
+      `<option value="${esc(c.category_id)}">${esc(c.category_name)}</option>`
+    ).join('');
+}
+
+function renderSummary(summary) {
+  const total = Number(summary.total || 0);
+  const pending = Number(summary.pending || 0);
+  const progress = Number(summary.in_progress || 0);
+  const resolved = Number(summary.resolved || 0);
+  const rate = total ? Math.round(resolved / total * 100) : 0;
+
+  $('total').textContent = total;
+  $('pending').textContent = pending;
+  $('inProgress').textContent = progress;
+  $('resolved').textContent = resolved;
+  $('resolutionRate').textContent = rate + '%';
+  $('resolutionFill').style.width = rate + '%';
+  $('openWorkload').textContent = pending + progress;
+}
+
+function renderCategoryChart(items) {
+  const container = $('categoryChart');
+  if (!items.length) {
+    container.innerHTML = '<div class="empty">No category data available.</div>';
+    return;
+  }
+
+  const max = Math.max(...items.map(i => Number(i.total || 0)), 1);
+
+  container.innerHTML = items.map(item => {
+    const total = Number(item.total || 0);
+    const width = total / max * 100;
+
+    return `
+      <div class="bar-row">
+        <span>${esc(item.category_name)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+        <span class="bar-number">${total}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderMonthlyChart(items) {
+  const container = $('monthlyChart');
+
+  if (!items.length) {
+    container.innerHTML = '<div class="empty">No monthly data available.</div>';
+    return;
+  }
+
+  const max = Math.max(...items.map(i => Number(i.total || 0)), 1);
+
+  container.innerHTML = items.map(item => {
+    const count = Number(item.total || 0);
+    const height = Math.max(count / max * 120, count ? 4 : 0);
+
+    return `
+      <div class="month-column">
+        <div class="month-value">${count}</div>
+        <div class="month-bar-area">
+          <div class="month-bar" style="height:${height}px"></div>
+        </div>
+        <div class="month-label">${esc(item.month)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderPriorityList() {
+  if (!isManager()) return;
+
+  const top = [...allIssues]
+    .filter(issue => ['Pending','In Progress'].includes(issue.status))
+    .sort((a,b) => getVoteCount(b) - getVoteCount(a))
+    .slice(0,5);
+
+  $('priorityList').innerHTML = top.length
+    ? top.map(issue => `
+      <div class="demand-row">
+        <div>
+          <div class="demand-row-title">${esc(issue.title)}</div>
+          <div class="demand-row-meta">
+            Report #${issue.issue_id} · ${esc(issue.category_name || 'Other')}
+          </div>
+        </div>
+        <span class="vote-number">${getVoteCount(issue)} votes</span>
+      </div>
+    `).join('')
+    : '<div class="empty">No open reports available.</div>';
+}
+
+function getFilteredIssues() {
+  const q = $('searchInput').value.trim().toLowerCase();
+  const status = $('statusFilter').value;
+  const category = $('categoryFilter').value;
+  const sort = $('sortFilter').value;
+
+  const filtered = allIssues.filter(issue => {
+    const text = [
+      issue.issue_id,issue.title,issue.description,
+      issue.location_name,issue.category_name,issue.department_name
+    ].join(' ').toLowerCase();
+
+    return (!q || text.includes(q))
+      && (!status || issue.status === status)
+      && (!category || String(issue.category_id) === category);
+  });
+
+  filtered.sort((a,b) => sort === 'votes'
+    ? getVoteCount(b) - getVoteCount(a)
+    : new Date(b.created_at) - new Date(a.created_at));
+
+  return filtered;
+}
+
+function renderReports() {
+  const filtered = getFilteredIssues();
+
+  $('resultsCount').textContent = `${filtered.length} reports`;
+  $('tableSummary').textContent = `Showing ${filtered.length} of ${allIssues.length} reports`;
+
+  $('priorityCount').textContent = allIssues.reduce(
+    (sum, issue) => sum + getVoteCount(issue), 0
+  );
+
+  const body = $('reportsBody');
+
+  if (!filtered.length) {
+    body.innerHTML = '<tr><td colspan="6" class="empty">No matching reports found.</td></tr>';
+    return;
+  }
+
+  body.innerHTML = filtered.map(issue => {
+    const id = Number(issue.issue_id);
+    const manager = isManager();
+
+    return `
+      <tr>
+        <td>
+          <div class="issue-title">${esc(issue.title)}</div>
+          <span class="sub">Report #${id}</span>
+        </td>
+        <td>
+          <div class="sub">${esc(issue.category_name || 'Uncategorised')}</div>
+          <div class="department-route">
+            ${departmentIdentity(issue.department_name,issue.category_name,'compact','Report destination')}
+          </div>
+        </td>
+        <td>${statusBadge(issue.status)}</td>
+        <td><span class="vote-number">${getVoteCount(issue)} votes</span></td>
+        <td>${esc(formatDate(issue.created_at))}</td>
+        <td>
+          <div class="actions">
+            <button class="btn outline viewDetails" data-id="${id}" type="button">View details</button>
+            ${manager ? `
+              <select class="statusSelect" data-id="${id}" aria-label="Status for report ${id}">
+                ${['Pending','In Progress','Resolved'].map(s =>
+                  `<option value="${s}" ${issue.status === s ? 'selected' : ''}>${s}</option>`
+                ).join('')}
+              </select>
+              <button class="btn teal saveStatus" data-id="${id}" type="button">Save</button>
+            ` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function loadDashboard() {
+  const data = await api('/api/issues/dashboard');
+
+  renderSummary(data.summary || {});
+  renderCategoryChart(Array.isArray(data.categories) ? data.categories : []);
+  renderMonthlyChart(Array.isArray(data.monthly) ? data.monthly : []);
+
+  const reports = await api('/api/issues?limit=200');
+  allIssues = Array.isArray(reports.issues) ? reports.issues : [];
+
+  renderReports();
+  renderPriorityList();
+
+  $('lastUpdated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+}
+
+async function saveStatus(issueId, status) {
+  const comment = prompt('Optional comment explaining the status change:');
+
+  if (comment === null) return;
+
+  const result = await api(`/api/issues/${issueId}/status`, {
+    method:'PATCH',
+    body:JSON.stringify({status,comment})
+  });
+
+  showNotice(result.message || 'Report updated.', 'success');
+  await loadDashboard();
+}
+
+async function loadIssueHistory(issueId) {
+  const container = $('historyContent');
+  if (!container) return;
+
+  container.textContent = 'Loading status history…';
+
+  try {
+    const data = await api(`/api/issues/${issueId}/history`);
+    const history = Array.isArray(data.history) ? data.history : [];
+
+    if (!history.length) {
+      container.textContent = 'No status-history records are available.';
+      return;
+    }
+
+    const ordered = [...history].reverse();
+
+    container.innerHTML = `
+      <div class="history-timeline">
+        ${ordered.map(item => `
+          <div class="history-entry">
+            <div class="history-transition">
+              ${statusBadge(item.old_status || 'Reported')}
+              <strong>→</strong>
+              ${statusBadge(item.new_status || 'Unknown')}
+            </div>
+            <div class="history-meta">
+              <strong>Changed by:</strong> ${esc(item.changed_by_name || 'Unknown user')}
+            </div>
+            <div class="history-meta">
+              <strong>Date:</strong> ${esc(formatDate(item.changed_at))}
+            </div>
+            ${item.comment ? `
+              <div class="history-comment">
+                <strong>Comment:</strong> ${esc(item.comment)}
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  } catch (error) {
+    container.innerHTML = `<div class="error">${esc(error.message)}</div>`;
+  }
+}
+
+async function showDetails(id) {
+  try {
+    const data = await api(`/api/issues/${id}`);
+    const issue = data.issue;
+
+    if (!issue) throw new Error('Report details unavailable.');
+
+    const field = (label,value) => `
+      <div class="detail-item">
+        <strong>${esc(label)}</strong>
+        ${esc(value ?? 'Not specified')}
+      </div>
+    `;
+
+    $('detailContent').innerHTML = `
+      <section class="destination-panel">
+        <strong class="department-caption">REPORT ROUTED TO</strong>
+        ${departmentIdentity(issue.department_name,issue.category_name,'large','Responsible department')}
+      </section>
+      <div class="detail-grid">
+        ${field('Report ID','#' + issue.issue_id)}
+        ${field('Status',issue.status)}
+        ${field('Community votes',getVoteCount(issue))}
+        ${field('Category',issue.category_name)}
+        ${field('Department',issue.department_name)}
+        ${field('Submitted by',issue.reporter_name)}
+        ${field('Date submitted',formatDate(issue.created_at))}
+        ${field('Location',issue.location_name)}
+        ${field('Coordinates',
+          issue.latitude != null && issue.longitude != null
+            ? `${issue.latitude}, ${issue.longitude}`
+            : 'Not specified')}
+      </div>
+
+      <div class="detail-item" style="margin-top:12px">
+        <strong>Report title</strong>${esc(issue.title)}
+      </div>
+
+      <div class="detail-item detail-description" style="margin-top:12px">
+        <strong>Description</strong>${esc(issue.description)}
+      </div>
+
+      ${issue.image_url ? `
+        <div class="detail-item" style="margin-top:12px">
+          <strong>Photo evidence</strong>
+          <img class="detail-image" src="${esc(issue.image_url)}" alt="Report photo evidence">
+        </div>
+      ` : ''}
+
+      <section class="history-panel">
+        <h3>🕘 Status History Timeline</h3>
+        <p class="history-subtitle">
+          Track changes made to this report, including timestamps and comments.
+        </p>
+        <div id="historyContent">Loading status history…</div>
+      </section>
+    `;
+
+    $('detailDialog').showModal();
+    await loadIssueHistory(id);
+  } catch (error) {
+    showNotice(error.message,'error');
+  }
+}
+
+async function loadCommunity() {
+  const data = await api('/api/issues/community');
+  communityIssues = Array.isArray(data.issues) ? data.issues : [];
+
+  $('communityList').innerHTML = communityIssues.length
+    ? communityIssues.map(issue => `
+      <article class="community-card">
+        <h3>${esc(issue.title)}</h3>
+        <div class="sub">
+          ${esc(issue.category_name || 'Other')}
+          <div class="department-route">
+            ${departmentIdentity(issue.department_name,issue.category_name,'compact','Report destination')}
+          </div>
+        </div>
+        <p class="community-description">${esc(issue.description)}</p>
+        <div>${statusBadge(issue.status)}</div>
+        <div class="vote-footer">
+          <span class="vote-number">${getVoteCount(issue)} votes</span>
+          <button class="btn teal voteBtn"
+                  data-id="${Number(issue.issue_id)}"
+                  type="button"
+                  ${issue.voted_by_me || !issue.can_vote ? 'disabled' : ''}>
+            ${issue.voted_by_me ? 'Already voted' : '♡ Vote'}
+          </button>
+        </div>
+      </article>
+    `).join('')
+    : '<div class="empty">No community reports available for voting.</div>';
+}
+
+async function voteForReport(id) {
+  const data = await api(`/api/issues/${id}/vote`,{method:'POST'});
+  showNotice(data.message || 'Vote recorded.','success');
+  await Promise.all([loadCommunity(),loadDashboard()]);
+}
+
+// ======================================================
+// MONTH 4 WEEK 1: NOTIFICATION SYSTEM
+// ======================================================
+
+async function loadNotifications() {
+  try {
+    const data = await api('/api/issues/notifications');
+
+    notifications = Array.isArray(data.notifications)
+      ? data.notifications
+      : [];
+
+    const unread = Number(data.unread_count || 0);
+    const count = $('notificationCount');
+
+    count.textContent = unread > 99 ? '99+' : unread;
+    count.hidden = unread === 0;
+
+    renderNotifications();
+  } catch (error) {
+    $('notificationList').innerHTML =
+      `<div class="notification-empty error">${esc(error.message)}</div>`;
+  }
+}
+
+function renderNotifications() {
+  const container = $('notificationList');
+
+  if (!notifications.length) {
+    container.innerHTML = `
+      <div class="notification-empty">
+        🔔 No notifications yet.<br>
+        New report submissions and status changes will appear here.
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = notifications.map(item => `
+    <div class="notification-item ${item.is_read ? '' : 'unread'}"
+         data-notification-id="${Number(item.notification_id)}"
+         role="button" tabindex="0">
+      <div class="notification-title">
+        ${item.notification_type === 'status_update' ? '🔄' : '📋'}
+        ${esc(item.title)}
+        ${item.is_read ? '' : '<span style="color:#19856b">●</span>'}
+      </div>
+      <div class="notification-message">${esc(item.message)}</div>
+      <div class="notification-date">${esc(formatDate(item.created_at))}</div>
+      <div class="sub">
+        ${item.is_read ? 'Read' : 'Unread · Click to mark as read'}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function markNotificationRead(id) {
+  await api(`/api/issues/notifications/${id}/read`, {
+    method:'PATCH'
+  });
+  await loadNotifications();
+}
+
+async function markAllNotificationsRead() {
+  await api('/api/issues/notifications/read-all', {
+    method:'PATCH'
+  });
+  await loadNotifications();
+}
+
+function toggleNotifications() {
+  const panel = $('notificationPanel');
+  panel.hidden = !panel.hidden;
+
+  $('notificationBtn').setAttribute(
+    'aria-expanded',
+    String(!panel.hidden)
+  );
+
+  if (!panel.hidden) loadNotifications();
+}
+
+// ======================================================
+// EVENT HANDLERS
+// ======================================================
+
+$('notificationBtn').addEventListener('click',toggleNotifications);
+
+$('markAllReadBtn').addEventListener('click',async () => {
+  try {
+    await markAllNotificationsRead();
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+});
+
+$('notificationList').addEventListener('click',async event => {
+  const item = event.target.closest('[data-notification-id]');
+  if (!item) return;
+
+  try {
+    await markNotificationRead(Number(item.dataset.notificationId));
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+});
+
+$('notificationList').addEventListener('keydown',event => {
+  if (event.key === 'Enter' || event.key === ' ') {
+    const item = event.target.closest('[data-notification-id]');
+    if (item) {
+      event.preventDefault();
+      item.click();
+    }
+  }
+});
+
+document.addEventListener('click',event => {
+  if (!$('notificationWrap').contains(event.target)) {
+    $('notificationPanel').hidden = true;
+    $('notificationBtn').setAttribute('aria-expanded','false');
+  }
+});
+
+$('logoutBtn').addEventListener('click',() => {
+  localStorage.removeItem('urbaneye_token');
+  localStorage.removeItem('urbaneye_user');
+  window.location.replace('/login.html');
+});
+
+$('refreshBtn').addEventListener('click',async () => {
+  try {
+    await Promise.all([loadDashboard(),loadNotifications()]);
+    showNotice('Dashboard refreshed successfully.','success');
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+});
+
+$('reloadReports').addEventListener('click',async () => {
+  try {
+    await loadDashboard();
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+});
+
+['searchInput','statusFilter','categoryFilter','sortFilter'].forEach(id => {
+  $(id).addEventListener(id === 'searchInput' ? 'input' : 'change',renderReports);
+});
+
+$('clearFilters').addEventListener('click',() => {
+  $('searchInput').value = '';
+  $('statusFilter').value = '';
+  $('categoryFilter').value = '';
+  $('sortFilter').value = 'newest';
+  renderReports();
+});
+
+$('reportsBody').addEventListener('click',async event => {
+  const details = event.target.closest('.viewDetails');
+
+  if (details) {
+    await showDetails(Number(details.dataset.id));
+    return;
+  }
+
+  const save = event.target.closest('.saveStatus');
+
+  if (save) {
+    const id = Number(save.dataset.id);
+    const select = $('reportsBody').querySelector(
+      `.statusSelect[data-id="${id}"]`
+    );
+
+    if (!select) return;
+
+    save.disabled = true;
+
+    try {
+      await saveStatus(id,select.value);
+    } catch(error) {
+      showNotice(error.message,'error');
+      await loadDashboard().catch(() => {});
+    } finally {
+      save.disabled = false;
+    }
+  }
+});
+
+$('closeDetails').addEventListener('click',() => {
+  $('detailDialog').close();
+});
+
+$('communityBtn').addEventListener('click',async () => {
+  $('communitySection').hidden = false;
+  $('communitySection').scrollIntoView({behavior:'smooth'});
+
+  try {
+    await loadCommunity();
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+});
+
+$('refreshCommunity').addEventListener('click',async () => {
+  try {
+    await loadCommunity();
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+});
+
+$('backToDashboard').addEventListener('click',() => {
+  $('communitySection').hidden = true;
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+$('communityList').addEventListener('click',async event => {
+  const button = event.target.closest('.voteBtn');
+  if (!button) return;
+
+  button.disabled = true;
+
+  try {
+    await voteForReport(Number(button.dataset.id));
+  } catch(error) {
+    showNotice(error.message,'error');
+    button.disabled = false;
+  }
+});
+
+// ======================================================
+// INITIALISE DASHBOARD
+// ======================================================
+
+async function initialiseDashboard() {
+  try {
+    await loadUser();
+    await Promise.all([
+      loadCategories(),
+      loadDashboard(),
+      loadNotifications()
+    ]);
+  } catch(error) {
+    showNotice(error.message,'error');
+  }
+}
+
+initialiseDashboard();
+</script>
+</body>
+</html>

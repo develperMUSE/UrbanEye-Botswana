@@ -1,0 +1,496 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#174D3A">
+<title>Login | UrbanEye Botswana</title>
+
+<style>
+:root {
+    --forest: #174D3A;
+    --forest-dark: #103728;
+    --green: #286746;
+    --sage: #E7F0E6;
+    --sage-light: #F3F7F0;
+    --cream: #FAF9F4;
+    --white: #FFFFFF;
+    --text: #20352A;
+    --muted: #718078;
+    --border: #DCE5DC;
+    --danger: #A32D35;
+    --success: #17633D;
+    --shadow: 0 24px 70px rgba(23,77,58,.10);
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 5% 5%, #E4F0E1 0, transparent 32%),
+        radial-gradient(circle at 95% 90%, #E9EFE0 0, transparent 30%),
+        var(--cream);
+}
+
+button, input { font: inherit; }
+
+.page {
+    width: min(1120px, 100%);
+    min-height: 100vh;
+    margin: auto;
+    padding: 28px;
+    display: grid;
+    grid-template-columns: 1fr 440px;
+    gap: 55px;
+    align-items: center;
+}
+
+.brand-panel { padding: 25px 0; }
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    margin-bottom: 65px;
+}
+
+.brand-mark {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    background: var(--forest);
+    border-radius: 17px;
+    box-shadow: 0 8px 20px #174D3A25;
+}
+
+.brand-mark svg { width: 38px; height: 38px; }
+
+.brand-name {
+    font-size: 21px;
+    font-weight: 800;
+    letter-spacing: -.6px;
+    color: var(--forest);
+}
+
+.brand-country {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--green);
+    background: #E6F0E4;
+    border: 1px solid #D6E6D3;
+    border-radius: 100px;
+    padding: 8px 13px;
+    font-size: 12px;
+    font-weight: 750;
+    letter-spacing: .4px;
+}
+
+.eyebrow-dot {
+    width: 7px;
+    height: 7px;
+    background: #559568;
+    border-radius: 50%;
+}
+
+.hero-title {
+    max-width: 570px;
+    margin: 24px 0 17px;
+    color: var(--forest-dark);
+    font-size: clamp(36px, 4.2vw, 57px);
+    line-height: 1.08;
+    letter-spacing: -2px;
+}
+
+.hero-title span { color: #47825A; }
+
+.hero-copy {
+    max-width: 500px;
+    color: #66766B;
+    font-size: 16px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.steps {
+    display: grid;
+    gap: 15px;
+    margin-top: 34px;
+    max-width: 470px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid #E2E9DE;
+    border-radius: 17px;
+    background: #FFFFFFA8;
+}
+
+.step-icon {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: var(--sage);
+    border-radius: 14px;
+    font-size: 22px;
+}
+
+.step strong { display: block; font-size: 14px; }
+.step small { display: block; margin-top: 5px; color: var(--muted); line-height: 1.5; }
+
+.card {
+    width: 100%;
+    background: var(--white);
+    border: 1px solid #E5EAE2;
+    border-radius: 25px;
+    padding: 36px;
+    box-shadow: var(--shadow);
+}
+
+.card-top {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    background: var(--sage);
+    border-radius: 15px;
+    font-size: 23px;
+    margin-bottom: 22px;
+}
+
+.card h1 {
+    margin: 0;
+    color: var(--forest-dark);
+    font-size: 28px;
+    letter-spacing: -.8px;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 10px 0 26px;
+}
+
+label {
+    display: block;
+    margin: 18px 0 8px;
+    color: #31483A;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+.input-wrap { position: relative; }
+
+input {
+    width: 100%;
+    min-height: 49px;
+    padding: 13px 14px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    outline: none;
+    background: #FCFDFB;
+    color: var(--text);
+    font-size: 14px;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+input::placeholder { color: #9AA69D; }
+
+input:focus {
+    border-color: #5B9970;
+    box-shadow: 0 0 0 4px #4D8A5D18;
+    background: white;
+}
+
+.password-input { padding-right: 76px; }
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: auto;
+    padding: 7px 8px;
+    margin: 0;
+    color: var(--green);
+    background: transparent;
+    border: 0;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.toggle-password:hover { color: var(--forest-dark); }
+
+.primary-button {
+    width: 100%;
+    min-height: 51px;
+    margin-top: 25px;
+    border: 0;
+    border-radius: 12px;
+    color: white;
+    background: var(--forest);
+    font-weight: 750;
+    cursor: pointer;
+    box-shadow: 0 7px 15px #174D3A20;
+    transition: background .2s, transform .2s;
+}
+
+.primary-button:hover {
+    background: var(--forest-dark);
+    transform: translateY(-1px);
+}
+
+.primary-button:disabled { opacity: .65; cursor: wait; transform: none; }
+
+.message {
+    display: none;
+    padding: 13px 14px;
+    margin-top: 18px;
+    border-radius: 11px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.message.success { display: block; color: var(--success); background: #E8F6EC; border: 1px solid #CDE9D4; }
+.message.error { display: block; color: #922B32; background: #FFF0F0; border: 1px solid #F3D2D2; }
+.message.info { display: block; color: #315B43; background: #F0F6EC; border: 1px solid #DDE9D7; }
+
+.register-link {
+    margin-top: 25px;
+    padding-top: 21px;
+    border-top: 1px solid #EDF0EA;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.register-link a { color: var(--green); font-weight: 800; text-decoration: none; }
+.register-link a:hover { text-decoration: underline; }
+
+.security-note {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+    margin-top: 18px;
+    color: #8A978E;
+    font-size: 11px;
+}
+
+.footer {
+    margin-top: 30px;
+    color: #87948A;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+@media (max-width: 850px) {
+    .page {
+        grid-template-columns: 1fr;
+        max-width: 520px;
+        gap: 15px;
+        padding: 20px;
+    }
+    .brand-panel { padding: 10px 0 0; }
+    .brand { margin-bottom: 28px; }
+    .hero-title { font-size: 36px; letter-spacing: -1.2px; margin-top: 19px; }
+    .hero-copy { font-size: 14px; }
+    .steps { display: none; }
+    .card { padding: 27px 23px; }
+    .footer { margin-top: 20px; }
+}
+
+@media (max-width: 380px) {
+    .page { padding: 13px; }
+    .card { padding: 23px 18px; }
+    .hero-title { font-size: 32px; }
+}
+</style>
+</head>
+
+<body>
+<main class="page">
+
+    <section class="brand-panel">
+        <div class="brand">
+            <div class="brand-mark" aria-label="UrbanEye Smart Eye logo">
+                <svg viewBox="0 0 48 48" fill="none" role="img" aria-hidden="true">
+                    <path d="M4 24C9 14.5 16 10 24 10C32 10 39 14.5 44 24C39 33.5 32 38 24 38C16 38 9 33.5 4 24Z"
+                          stroke="#FFFFFF" stroke-width="2.8" stroke-linejoin="round"/>
+                    <circle cx="24" cy="24" r="9" stroke="#D6F3C7" stroke-width="2.8"/>
+                    <circle cx="24" cy="24" r="3.5" fill="#D6F3C7"/>
+                    <path d="M29 8C31 4.5 35 4 38 5C37.5 9 34.5 12 30 12"
+                          stroke="#B9E6A7" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div>
+                <div class="brand-name">UrbanEye</div>
+                <div class="brand-country">Botswana · Civic Solutions</div>
+            </div>
+        </div>
+
+        <div class="eyebrow"><span class="eyebrow-dot"></span> A smarter way to care for our communities</div>
+
+        <h2 class="hero-title">
+            See an issue.<br>
+            <span>Make a difference.</span>
+        </h2>
+
+        <p class="hero-copy">
+            Help build cleaner, safer and better-connected communities.
+            Report local issues, reach the right department and follow progress
+            in one place.
+        </p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-icon" aria-hidden="true">📍</div>
+                <div><strong>1. Report an issue</strong><small>Share details, a photo and location when available.</small></div>
+            </div>
+            <div class="step">
+                <div class="step-icon" aria-hidden="true">🌱</div>
+                <div><strong>2. Reach the right team</strong><small>Issues can be categorized and directed to a department.</small></div>
+            </div>
+            <div class="step">
+                <div class="step-icon" aria-hidden="true">✓</div>
+                <div><strong>3. Follow progress</strong><small>Check updates as the responsible team works on the issue.</small></div>
+            </div>
+        </div>
+
+        <div class="footer">Supporting responsive public services and a more sustainable Botswana.</div>
+    </section>
+
+    <section class="card" aria-labelledby="loginHeading">
+        <div class="card-top" aria-hidden="true">🌿</div>
+        <h1 id="loginHeading">Welcome back</h1>
+        <p class="subtitle">Sign in to your UrbanEye account to continue.</p>
+
+        <form id="loginForm">
+            <label for="email">Email address</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="username"
+                required
+                placeholder="you@example.com"
+            >
+
+            <label for="password">Password</label>
+            <div class="input-wrap">
+                <input
+                    class="password-input"
+                    type="password"
+                    id="password"
+                    name="password"
+                    autocomplete="current-password"
+                    required
+                    placeholder="Enter your password"
+                >
+                <button class="toggle-password" type="button" id="togglePassword"
+                        aria-controls="password" aria-pressed="false">Show</button>
+            </div>
+
+            <button class="primary-button" type="submit" id="loginButton">Sign in securely</button>
+        </form>
+
+        <div id="message" class="message" role="status" aria-live="polite"></div>
+
+        <div class="register-link">
+            New to UrbanEye? <a href="/register.html">Create an account</a>
+        </div>
+
+        <div class="security-note">
+            <span aria-hidden="true">🔒</span> Your account is protected by secure sign-in.
+        </div>
+    </section>
+
+</main>
+
+<script>
+const loginForm = document.getElementById('loginForm');
+const passwordInput = document.getElementById('password');
+const togglePassword = document.getElementById('togglePassword');
+const message = document.getElementById('message');
+const loginButton = document.getElementById('loginButton');
+
+togglePassword.addEventListener('click', function () {
+    const shouldShow = passwordInput.type === 'password';
+    passwordInput.type = shouldShow ? 'text' : 'password';
+    togglePassword.textContent = shouldShow ? 'Hide' : 'Show';
+    togglePassword.setAttribute('aria-pressed', String(shouldShow));
+});
+
+loginForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    message.className = 'message info';
+    message.textContent = 'Signing you in…';
+    loginButton.disabled = true;
+    loginButton.textContent = 'Signing in…';
+
+    const email = document.getElementById('email').value.trim();
+    const password = passwordInput.value;
+
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        let result;
+        try {
+            result = await response.json();
+        } catch {
+            throw new Error('The server returned an unexpected response. Please try again.');
+        }
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Login failed. Check your email and password.');
+        }
+
+        if (!result.token || !result.user) {
+            throw new Error('Login response was incomplete. Please contact the system administrator.');
+        }
+
+        localStorage.setItem('urbaneye_token', result.token);
+        localStorage.setItem('urbaneye_user', JSON.stringify(result.user));
+
+        message.className = 'message success';
+        message.textContent = 'Login successful. Opening your dashboard…';
+
+        window.location.href = '/dashboard.html';
+    } catch (error) {
+        message.className = 'message error';
+        message.textContent = error.message || 'Unable to sign in. Please try again.';
+        loginButton.disabled = false;
+        loginButton.textContent = 'Sign in securely';
+    }
+});
+</script>
+</body>
+</html>
+```
