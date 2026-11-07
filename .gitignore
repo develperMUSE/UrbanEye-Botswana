@@ -1,7 +1,7 @@
-# Installed Node.js dependencies
+# Node.js dependencies
 node_modules/
 
-# Environment variables and secret keys
+# Environment variables and secrets
 .env
 .env.*
 !.env.example
@@ -10,11 +10,15 @@ node_modules/
 uploads/*
 !uploads/.gitkeep
 
-# Log files
+# Logs
 *.log
 npm-debug.log*
+
+# Backup files and folders
+*.bak
+*.backup-*
+urbaneye-backup-*/
 
 # Operating system files
 .DS_Store
 Thumbs.db
-*.bak

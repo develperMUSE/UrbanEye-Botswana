@@ -1,4 +1,3 @@
-
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -61,15 +60,116 @@ const upload = multer({
 const statuses = ['Pending', 'In Progress', 'Resolved'];
 
 // ====================================================
+// URBANEYE: DISTRIBUTE NEW REPORT NOTIFICATIONS
+// ====================================================
+
+// Send a new-report notification to:
+// 1. The person who submitted the report.
+// 2. Every administrator.
+// 3. Officers assigned to the report's department.
+//
+// Each recipient receives only one notification.
+
+async function notifyNewIssueRecipients({
+  issueId,
+  reporterId,
+  departmentId,
+  categoryName,
+  departmentName
+}) {
+  const [users] = await db.execute(`
+    SELECT user_id, role
+    FROM users
+    WHERE user_id = ?
+       OR role = 'admin'
+       OR (role = 'officer' AND department_id = ?)
+  `, [reporterId, departmentId]);
+
+  const recipientMap = new Map();
+
+  for (const user of users) {
+    const userId = Number(user.user_id);
+
+    let title;
+    let message;
+
+    if (userId === Number(reporterId)) {
+      title = `Issue #${issueId} submitted`;
+
+      message =
+        `Your report was submitted successfully and routed to ` +
+        `${departmentName || 'the responsible department'}. ` +
+        `It is pending review.`;
+    }
+
+    else if (user.role === 'admin') {
+      title = 'New community report received';
+
+      message =
+        `Report #${issueId} (${categoryName || 'Other'}) was submitted ` +
+        `and routed to ${departmentName || 'an assigned department'}.`;
+    }
+
+    else if (user.role === 'officer') {
+      title = 'New report assigned to your department';
+
+      message =
+        `Report #${issueId} (${categoryName || 'Other'}) has been routed ` +
+        `to ${departmentName || 'your department'} and is awaiting action.`;
+    }
+
+    else {
+      continue;
+    }
+
+    recipientMap.set(userId, {
+      userId,
+      title,
+      message
+    });
+  }
+
+  const recipients = [...recipientMap.values()];
+
+  if (!recipients.length) {
+    return;
+  }
+
+  const placeholders = recipients
+    .map(() => "(?, ?, ?, ?, 'new_issue')")
+    .join(', ');
+
+  const values = recipients.flatMap(item => [
+    item.userId,
+    issueId,
+    item.title,
+    item.message
+  ]);
+
+  await db.execute(`
+    INSERT INTO notifications
+      (user_id, issue_id, title, message, notification_type)
+    VALUES ${placeholders}
+  `, values);
+}
+
+// ====================================================
 // MONTH 4 WEEK 1: IN-APP NOTIFICATION SYSTEM
 // ====================================================
 
-// GET ALL NOTIFICATIONS FOR LOGGED-IN USER
+// GET ALL NOTIFICATIONS FOR THE LOGGED-IN USER
+
 router.get('/notifications', authenticateToken, async (req, res) => {
   try {
     const [notifications] = await db.execute(`
-      SELECT notification_id, issue_id, title, message,
-             notification_type, is_read, created_at
+      SELECT
+        notification_id,
+        issue_id,
+        title,
+        message,
+        notification_type,
+        is_read,
+        created_at
       FROM notifications
       WHERE user_id = ?
       ORDER BY created_at DESC, notification_id DESC
@@ -79,7 +179,8 @@ router.get('/notifications', authenticateToken, async (req, res) => {
     const [counts] = await db.execute(`
       SELECT COUNT(*) AS unread_count
       FROM notifications
-      WHERE user_id = ? AND is_read = 0
+      WHERE user_id = ?
+        AND is_read = 0
     `, [req.user.user_id]);
 
     res.json({
@@ -87,8 +188,10 @@ router.get('/notifications', authenticateToken, async (req, res) => {
       notifications,
       unread_count: Number(counts[0].unread_count || 0)
     });
+
   } catch (error) {
     console.error('Notifications load error:', error);
+
     res.status(500).json({
       success: false,
       message: 'Could not load notifications.'
@@ -97,6 +200,7 @@ router.get('/notifications', authenticateToken, async (req, res) => {
 });
 
 // MARK ONE NOTIFICATION AS READ
+
 router.patch('/notifications/:id/read', authenticateToken, async (req, res) => {
   try {
     const id = Number(req.params.id);
@@ -111,7 +215,8 @@ router.patch('/notifications/:id/read', authenticateToken, async (req, res) => {
     const [result] = await db.execute(`
       UPDATE notifications
       SET is_read = 1
-      WHERE notification_id = ? AND user_id = ?
+      WHERE notification_id = ?
+        AND user_id = ?
     `, [id, req.user.user_id]);
 
     if (!result.affectedRows) {
@@ -125,8 +230,10 @@ router.patch('/notifications/:id/read', authenticateToken, async (req, res) => {
       success: true,
       message: 'Notification marked as read.'
     });
+
   } catch (error) {
     console.error('Notification read error:', error);
+
     res.status(500).json({
       success: false,
       message: 'Could not update notification.'
@@ -135,20 +242,24 @@ router.patch('/notifications/:id/read', authenticateToken, async (req, res) => {
 });
 
 // MARK ALL NOTIFICATIONS AS READ
+
 router.patch('/notifications/read-all', authenticateToken, async (req, res) => {
   try {
     await db.execute(`
       UPDATE notifications
       SET is_read = 1
-      WHERE user_id = ? AND is_read = 0
+      WHERE user_id = ?
+        AND is_read = 0
     `, [req.user.user_id]);
 
     res.json({
       success: true,
       message: 'All notifications marked as read.'
     });
+
   } catch (error) {
     console.error('Notification read-all error:', error);
+
     res.status(500).json({
       success: false,
       message: 'Could not update notifications.'
@@ -166,6 +277,7 @@ router.get('/categories', authenticateToken, async (_req, res) => {
       success: true,
       categories: await getAllCategories()
     });
+
   } catch (error) {
     console.error('Load categories error:', error);
 
@@ -195,6 +307,7 @@ router.get(
         success: true,
         issues
       });
+
     } catch (error) {
       console.error('Community feed error:', error);
 
@@ -257,6 +370,7 @@ router.post(
         issue_id: result.issue_id,
         vote_count: result.vote_count
       });
+
     } catch (error) {
       if (error.code === 'ER_DUP_ENTRY') {
         return res.status(409).json({
@@ -276,6 +390,54 @@ router.post(
 );
 
 // ====================================================
+// CATEGORY SUGGESTION
+// ====================================================
+
+/* URBANEYE_CATEGORY_UPDATE_4 */
+
+router.post('/suggest-category', authenticateToken, async (req, res) => {
+  try {
+    const text = String(req.body?.text || '').slice(0, 10000);
+
+    const category = await suggestCategoryFromText(text);
+
+    res.json({
+      success: true,
+      category
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Category lookup failed.'
+    });
+  }
+});
+
+router.post('/resolve-ai-category', authenticateToken, async (req, res) => {
+  try {
+    const text = String(req.body?.prediction || '').slice(0, 2000);
+
+    const category = await suggestCategoryFromText(text);
+
+    res.json({
+      success: true,
+      category
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: 'AI category lookup failed.'
+    });
+  }
+});
+
+// ====================================================
 // CREATE A REPORT
 // ====================================================
 
@@ -283,6 +445,7 @@ router.post(
   '/',
   authenticateToken,
   allowRoles('citizen', 'admin', 'officer'),
+
   (req, res, next) => {
     upload.single('image')(req, res, error => {
       if (error) {
@@ -298,16 +461,22 @@ router.post(
       next();
     });
   },
+
   async (req, res) => {
     let savedPath;
 
     try {
       const title = String(req.body.title || '').trim();
-      const description = String(req.body.description || '').trim();
+
+      const description = String(
+        req.body.description || ''
+      ).trim();
+
       const locationName =
         String(req.body.location_name || '').trim() || null;
 
       let categoryId = Number(req.body.category_id);
+
       let category = null;
 
       if (title.length < 4 || title.length > 200) {
@@ -418,16 +587,26 @@ router.post(
         locationName
       });
 
-      await db.execute(`
-        INSERT INTO notifications
-          (user_id, issue_id, title, message, notification_type)
-        VALUES (?, ?, ?, ?, 'new_issue')
-      `, [
-        req.user.user_id,
-        issueId,
-        `Issue #${issueId} submitted`,
-        'Your report was submitted successfully and is pending review.'
-      ]);
+      // Send notifications to the reporter, administrators,
+      // and officers assigned to the selected department.
+      //
+      // Notification failure must not undo a successfully saved report.
+
+      try {
+        await notifyNewIssueRecipients({
+          issueId,
+          reporterId: req.user.user_id,
+          departmentId: category.department_id,
+          categoryName: category.category_name,
+          departmentName: category.department_name
+        });
+
+      } catch (notificationError) {
+        console.error(
+          'New issue notification distribution error:',
+          notificationError
+        );
+      }
 
       res.status(201).json({
         success: true,
@@ -438,6 +617,7 @@ router.post(
         category_source: categorySource,
         status: 'Pending'
       });
+
     } catch (error) {
       if (savedPath) {
         fs.promises.unlink(savedPath).catch(() => {});
@@ -470,6 +650,7 @@ router.get('/', authenticateToken, async (req, res) => {
       success: true,
       issues
     });
+
   } catch (error) {
     console.error('Load reports error:', error);
 
@@ -496,6 +677,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
       ...stats,
       recent_issues: issues
     });
+
   } catch (error) {
     console.error('Dashboard error:', error);
 
@@ -531,11 +713,16 @@ router.get('/:id/history', authenticateToken, async (req, res) => {
     }
 
     const [history] = await db.execute(`
-      SELECT h.history_id, h.old_status, h.new_status,
-             h.comment, h.changed_at,
-             u.full_name AS changed_by_name
+      SELECT
+        h.history_id,
+        h.old_status,
+        h.new_status,
+        h.comment,
+        h.changed_at,
+        u.full_name AS changed_by_name
       FROM issue_status_history h
-      LEFT JOIN users u ON u.user_id = h.changed_by
+      LEFT JOIN users u
+        ON u.user_id = h.changed_by
       WHERE h.issue_id = ?
       ORDER BY h.changed_at DESC
     `, [id]);
@@ -544,6 +731,7 @@ router.get('/:id/history', authenticateToken, async (req, res) => {
       success: true,
       history
     });
+
   } catch (error) {
     console.error('Issue history error:', error);
 
@@ -562,10 +750,13 @@ router.patch(
   '/:id/status',
   authenticateToken,
   allowRoles('officer', 'admin'),
+
   async (req, res) => {
     try {
       const id = Number(req.params.id);
+
       const status = String(req.body.status || '');
+
       const comment = String(req.body.comment || '')
         .trim()
         .slice(0, 1000);
@@ -614,6 +805,7 @@ router.patch(
           : 'Report status updated.',
         issue: result.issue
       });
+
     } catch (error) {
       console.error('Update issue status error:', error);
 
@@ -653,6 +845,7 @@ router.get('/:id', authenticateToken, async (req, res) => {
       success: true,
       issue
     });
+
   } catch (error) {
     console.error('Load single report error:', error);
 

@@ -297,64 +297,187 @@ function normalise(text){
   .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
 }
 
-function inferCategory(text){
- const t=normalise(text);
- if(!t)return null;
- const rules=[
-  {keys:['burst water pipe','burst pipe','pipe burst','water pipe burst','water leak','leaking pipe','leakage','pipe leaking','broken water pipe'],names:['Burst Water Pipe']},
-  {keys:['water supply','no water','water shortage','water cut','water outage','dry tap','water pressure','water'],names:['Water Supply']},
-  {keys:['pothole','pot hole','road hole'],names:['Pothole']},
-  {keys:['illegal dumping','dumped rubbish','dumping rubbish','rubbish dump','waste pile','trash dump','garbage dump','littering','waste'],names:['Illegal Dumping']},
-  {keys:['streetlight','street light','lamp post','street lamp','light pole','broken light'],names:['Broken Streetlight']},
-  {keys:['blocked drain','blocked drainage','drain blocked','drainage','flooded drain','sewer drain'],names:['Blocked Drainage']},
-  {keys:['damaged road','road damage','cracked road','road surface','road is damaged','unsafe road'],names:['Damaged Road']},
-  {keys:['electricity','power outage','power cut','no power','electrical fault','electric wire','transformer','blackout'],names:['Other']}
- ];
- for(const rule of rules){
-  if(rule.keys.some(k=>t.includes(k))){
-   for(const name of rule.names){
-    const found=categories.find(c=>normalise(c.category_name)===normalise(name));
-    if(found)return found;
-   }
-  }
- }
- return null;
-}
+/* URBANEYE_CATEGORY_UPDATE_4 */
+let categoryLookupSequence = 0;
 
-function updateCategorySuggestion(){
- if(categoryWasManuallyChanged||reportSubmitted)return;
- const suggestion=inferCategory(`${titleInput.value} ${descriptionInput.value}`);
- if(suggestion){
-  categorySelect.value=String(suggestion.category_id);
-  categoryHint.textContent=`Suggested automatically: ${suggestion.category_name} → ${suggestion.department_name}. You can choose a different category manually.`;
- }else{
-  categoryHint.textContent='No confident category match yet. Add details such as “burst water pipe”, “pothole” or “illegal dumping”, or select a category manually.';
- }
-}
-
-async function loadCategories(){
- try{
-  const r=await fetch('/api/issues/categories',{headers:{Authorization:`Bearer ${token}`}});
-  const d=await r.json();
-  if(r.status===401){location.replace('/login.html');return;}
-  if(!r.ok)throw Error(d.message||'Could not load categories.');
-  categories=d.categories||[];
-  categorySelect.replaceChildren();
-  const placeholder=document.createElement('option');
-  placeholder.value='';
-  placeholder.textContent='Choose a category (or type issue details for an automatic suggestion)';
-  categorySelect.appendChild(placeholder);
-  categories.forEach(c=>{
-   const option=document.createElement('option');
-   option.value=String(c.category_id);
-   option.textContent=`${c.category_name} — ${c.department_name}`;
-   categorySelect.appendChild(option);
+async function inferCategory(text) {
+  const response = await fetch('/api/issues/suggest-category', {
+    method: 'POST',
+    headers: {
+      Authorization: 'Bearer ' + token,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ text })
   });
-  updateCategorySuggestion();
- }catch(e){
-  categorySelect.innerHTML='<option value="">Unable to load categories</option>';
-  showMessage(e.message,'error','Categories could not be loaded');
- }
+  if (!response.ok) throw Error('Category lookup unavailable');
+  const data = await response.json();
+  return data.category || null;
+}
+
+async function updateCategorySuggestion() {
+  if (categoryWasManuallyChanged || reportSubmitted) return;
+  const sequence = ++categoryLookupSequence;
+  const text = titleInput.value + ' ' + descriptionInput.value;
+
+  if (!text.trim()) return;
+
+  try {
+    const category = await inferCategory(text);
+    if (sequence !== categoryLookupSequence ||
+        categoryWasManuallyChanged || reportSubmitted) return;
+
+    if (category) {
+      showDepartmentSelection(category);
+      categoryHint.textContent =
+        'Suggested: ' + category.category_name +
+        ' 鈫?' + category.department_name;
+    } else {
+      categoryHint.textContent =
+        'No matching category. Please select one manually.';
+    }
+  } catch (error) {
+    if (sequence === categoryLookupSequence) {
+      categoryHint.textContent =
+        'Automatic suggestion unavailable. Select manually.';
+    }
+  }
+}
+
+/*
+ URBANEYE DEPARTMENT DROPDOWN
+ One visible option per department.
+ All original detailed categories remain in memory.
+*/
+
+function getDepartmentLabel(departmentName) {
+  const name = String(departmentName || '');
+  const lower = name.toLowerCase();
+
+  if (
+    lower.includes('bpc') ||
+    lower.includes('power corporation') ||
+    lower.includes('electricity')
+  ) {
+    return 'BPC - Responsible for Power/Electrical Issues';
+  }
+
+  if (
+    lower.includes('wuc') ||
+    lower.includes('water utilities')
+  ) {
+    return 'WUC - Responsible for Water-Related Issues';
+  }
+
+  if (
+    lower.includes('waste') ||
+    lower.includes('sanitation')
+  ) {
+    return 'Waste Management - Responsible for Waste and Sewage Issues';
+  }
+
+  if (lower.includes('road')) {
+    return 'Department of Roads - Responsible for Road-Related Issues';
+  }
+
+  if (
+    lower.includes('council') ||
+    lower.includes('municipal')
+  ) {
+    return 'Local Councils - Responsible for Other Municipal Issues';
+  }
+
+  return name + ' - Responsible for Departmental Issues';
+}
+
+function showDepartmentSelection(category) {
+  if (!category) return;
+
+  const id = String(category.category_id);
+  const departmentId = String(category.department_id);
+
+  let option = Array.from(categorySelect.options).find(
+    item => item.value === id
+  );
+
+  if (!option) {
+    option = Array.from(categorySelect.options).find(
+      item => item.dataset.departmentId === departmentId
+    );
+  }
+
+  if (option) {
+    option.value = id;
+    option.dataset.departmentId = departmentId;
+    option.textContent = getDepartmentLabel(
+      category.department_name
+    );
+    categorySelect.value = id;
+  }
+}
+
+async function loadCategories() {
+  try {
+    const response = await fetch('/api/issues/categories', {
+      headers: {
+        Authorization: 'Bearer ' + token
+      }
+    });
+
+    const data = await response.json();
+
+    if (response.status === 401) {
+      location.replace('/login.html');
+      return;
+    }
+
+    if (!response.ok) {
+      throw Error(data.message || 'Could not load categories.');
+    }
+
+    // Keep EVERY original database category for AI/text matching.
+    categories = data.categories || [];
+
+    categorySelect.replaceChildren();
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = 'Choose the responsible department';
+    categorySelect.appendChild(placeholder);
+
+    const seenDepartments = new Set();
+
+    for (const category of categories) {
+      const departmentId = String(category.department_id);
+
+      if (seenDepartments.has(departmentId)) {
+        continue;
+      }
+
+      seenDepartments.add(departmentId);
+
+      const option = document.createElement('option');
+
+      option.value = String(category.category_id);
+      option.dataset.departmentId = departmentId;
+      option.textContent = getDepartmentLabel(
+        category.department_name
+      );
+
+      categorySelect.appendChild(option);
+    }
+
+    updateCategorySuggestion();
+
+  } catch (error) {
+    categorySelect.innerHTML =
+      '<option value="">Unable to load departments</option>';
+
+    showMessage(
+      error.message,
+      'error',
+      'Departments could not be loaded'
+    );
+  }
 }
 
 /* ====================================================
@@ -764,13 +887,56 @@ classifyImageBtn.addEventListener('click',async()=>{
    throw Error(data.message||'AI classification failed. You can still select a category manually.');
   }
 
-  const prediction=data.prediction||data;
-  if(!prediction.category_id||!prediction.category_name){
-   throw Error('AI did not return a category available in UrbanEye. Please select a category manually.');
+  /* URBANEYE_CATEGORY_UPDATE_4 */
+  let prediction=data.prediction||data;
+  let matchedCategory=categories.find(c =>
+    String(c.category_id)===String(prediction.category_id)
+  );
+
+  if(!matchedCategory){
+    const description=[
+      prediction.category_name,
+      prediction.label,
+      prediction.issue_type,
+      prediction.description,
+      prediction.explanation,
+      prediction.visible_evidence
+    ].filter(Boolean).join(' ');
+
+    if(!description){
+      throw Error('AI returned no recognisable issue description.');
+    }
+
+    const matchResponse=await fetch('/api/issues/resolve-ai-category',{
+      method:'POST',
+      headers:{
+        Authorization:'Bearer '+token,
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({prediction:description})
+    });
+
+    if(!matchResponse.ok){
+      throw Error('AI category lookup failed.');
+    }
+
+    const matchData=await matchResponse.json();
+    matchedCategory=matchData.category;
+
+    if(!matchedCategory){
+      throw Error('No matching database category. Select manually.');
+    }
   }
 
+  prediction={
+    ...prediction,
+    category_id:matchedCategory.category_id,
+    category_name:matchedCategory.category_name,
+    department_name:matchedCategory.department_name
+  };
+
   aiPrediction=prediction;
-  categorySelect.value=String(prediction.category_id);
+  showDepartmentSelection(prediction);
   categoryWasManuallyChanged=true;
   categoryHint.textContent=`AI suggested: ${prediction.category_name}`+
    (prediction.department_name?` → ${prediction.department_name}. Review or change it before submitting.`:'. Review or change it before submitting.');
